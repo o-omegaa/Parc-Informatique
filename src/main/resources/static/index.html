@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portail Fournisseur ONEE — Connexion</title>
+    <meta name="description" content="Portail Fournisseur ONEE Branche Eau — Accédez à votre espace fournisseur ou service achat.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --orange:        #f97316;
+            --orange-dark:   #ea580c;
+            --orange-light:  #fed7aa;
+            --orange-xlight: #fff7ed;
+            --beige:         #fef3e2;
+            --beige-dark:    #fde8c4;
+            --brown:         #9a3412;
+            --text-dark:     #1c1917;
+            --text-mid:      #57534e;
+            --text-light:    #a8a29e;
+            --white:         #ffffff;
+            --border:        #e7d5bf;
+            --shadow:        rgba(234,88,12,0.15);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+
+        body {
+            background: var(--beige);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+
+        /* ─── Card container ─── */
+        .card {
+            background: var(--white);
+            border-radius: 28px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.12), 0 4px 16px rgba(0,0,0,0.06);
+            display: flex;
+            width: 100%;
+            max-width: 960px;
+            min-height: 560px;
+            overflow: hidden;
+        }
+
+        /* ─── Left — Form ─── */
+        .form-panel {
+            flex: 1;
+            padding: 52px 48px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            min-width: 0;
+        }
+
+        /* ─── Right — Illustration ─── */
+        .illus-panel {
+            width: 420px;
+            flex-shrink: 0;
+            background: var(--beige);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .illus-panel img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        /* ─── Tabs ─── */
+        .tabs {
+            display: flex;
+            gap: 0;
+            background: var(--beige);
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 32px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px 16px;
+            border: none;
+            background: transparent;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-mid);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn.active {
+            background: var(--white);
+            color: var(--orange-dark);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        /* ─── Section headings ─── */
+        .section-title {
+            font-size: 30px;
+            font-weight: 800;
+            color: var(--brown);
+            margin-bottom: 6px;
+            letter-spacing: -0.5px;
+        }
+
+        .section-subtitle {
+            font-size: 14px;
+            color: var(--text-mid);
+            margin-bottom: 28px;
+        }
+
+        .section-subtitle a {
+            color: var(--orange);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .section-subtitle a:hover { text-decoration: underline; }
+
+        /* ─── Form fields ─── */
+        .field-group {
+            margin-bottom: 18px;
+        }
+
+        .field-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 7px;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            font-size: 14px;
+            color: var(--text-dark);
+            background: var(--white);
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .input-wrap input::placeholder { color: var(--text-light); }
+
+        .input-wrap input:focus {
+            border-color: var(--orange);
+            box-shadow: 0 0 0 3px rgba(249,115,22,0.12);
+        }
+
+        .input-wrap input.error-field { border-color: #ef4444; }
+
+        .toggle-pw {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 18px;
+            color: var(--text-light);
+            transition: color 0.2s;
+            padding: 0;
+        }
+
+        .toggle-pw:hover { color: var(--orange); }
+
+        .input-with-eye input { padding-right: 44px; }
+
+        /* ─── Password strength ─── */
+        .pw-strength-bar {
+            display: flex;
+            gap: 4px;
+            margin-top: 8px;
+            height: 4px;
+        }
+
+        .pw-strength-bar span {
+            flex: 1;
+            border-radius: 4px;
+            background: var(--border);
+            transition: background 0.3s;
+        }
+
+        .pw-strength-label {
+            font-size: 11px;
+            color: var(--text-light);
+            margin-top: 4px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        /* ─── Buttons ─── */
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+            color: var(--white);
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+            margin-top: 4px;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 24px rgba(249,115,22,0.4);
+        }
+
+        .btn-primary:active { transform: translateY(0); }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* ─── Forgot password ─── */
+        .forgot-link {
+            display: inline-block;
+            margin-top: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--orange);
+            text-decoration: none;
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        .forgot-link:hover { text-decoration: underline; }
+
+        /* ─── Divider ─── */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0;
+            color: var(--text-light);
+            font-size: 13px;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* ─── Terms checkbox ─── */
+        .checkbox-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--text-mid);
+        }
+
+        .checkbox-row input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            margin-top: 1px;
+            accent-color: var(--orange);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        /* ─── 2-col grid for register ─── */
+        .form-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0 16px;
+        }
+
+        /* ─── Alerts ─── */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            display: none;
+        }
+
+        .alert-error { background: #fef2f2; color: #b91c1c; border: 1px solid #fecaca; }
+        .alert-success { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+        .alert-info { background: #fff7ed; color: var(--orange-dark); border: 1px solid var(--orange-light); }
+        .alert.show { display: block; }
+
+        /* ─── Forgot password overlay ─── */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.35);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-box {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 36px;
+            width: 90%;
+            max-width: 420px;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.15);
+            transform: translateY(10px);
+            transition: transform 0.25s;
+        }
+
+        .modal-overlay.open .modal-box { transform: translateY(0); }
+
+        .modal-box h3 {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--brown);
+            margin-bottom: 8px;
+        }
+
+        .modal-box p {
+            font-size: 13px;
+            color: var(--text-mid);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn-cancel {
+            flex: 1;
+            padding: 12px;
+            border: 1.5px solid var(--border);
+            border-radius: 10px;
+            background: none;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-mid);
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .btn-cancel:hover { background: var(--beige); }
+
+        .btn-send {
+            flex: 1;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: box-shadow 0.15s;
+        }
+
+        .btn-send:hover { box-shadow: 0 6px 20px rgba(249,115,22,0.35); }
+
+        /* ─── Spinner ─── */
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            vertical-align: middle;
+            margin-right: 6px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-panel { animation: fadeInUp 0.4s ease; }
+
+        /* ─── Responsive ─── */
+        @media (max-width: 700px) {
+            .illus-panel { display: none; }
+            .form-panel { padding: 36px 28px; }
+            .card { border-radius: 20px; }
+            .form-grid-2 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <!-- LEFT: Form -->
+    <div class="form-panel">
+
+        <!-- Logo badge -->
+        <div style="text-align:center;margin-bottom:18px;">
+            <img src="/images/login_illustration.jpg" alt="Logo ONEE"
+                 style="width:72px;height:72px;object-fit:cover;border-radius:16px;box-shadow:0 4px 16px rgba(249,115,22,0.25);">
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" id="tab-login" onclick="switchTab('login')">Connexion</button>
+            <button class="tab-btn" id="tab-register" onclick="switchTab('register')">Inscription</button>
+        </div>
+
+        <!-- ════ LOGIN FORM ════ -->
+        <div id="section-login">
+            <h1 class="section-title">Se connecter</h1>
+            <p class="section-subtitle">
+                Vous n'avez pas de compte ?
+                <a onclick="switchTab('register')" style="cursor:pointer;">Créer un compte</a>
+            </p>
+
+            <div class="alert alert-error" id="login-error"></div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <div class="field-group">
+                    <label for="login-username">Nom d'utilisateur</label>
+                    <div class="input-wrap">
+                        <input type="text" id="login-username" placeholder="votre_identifiant"
+                               autocomplete="username" required>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label for="login-password">Mot de passe</label>
+                    <div class="input-wrap input-with-eye">
+                        <input type="password" id="login-password" placeholder="••••••••••••"
+                               autocomplete="current-password" required>
+                        <button type="button" class="toggle-pw" onclick="togglePw('login-password', this)">👁</button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary" id="login-btn">Se connecter</button>
+            </form>
+
+            <button class="forgot-link" onclick="openForgotModal()">Mot de passe oublié ?</button>
+        </div>
+
+        <!-- ════ REGISTER FORM ════ -->
+        <div id="section-register" style="display:none;">
+            <h1 class="section-title">Créer un compte</h1>
+            <p class="section-subtitle">
+                Déjà inscrit ?
+                <a onclick="switchTab('login')" style="cursor:pointer;">Se connecter</a>
+            </p>
+
+            <div class="alert alert-error" id="register-error"></div>
+            <div class="alert alert-success" id="register-success"></div>
+
+            <form id="registerForm" onsubmit="handleRegister(event)">
+                <div class="form-grid-2">
+                    <div class="field-group">
+                        <label for="reg-username">Nom d'utilisateur *</label>
+                        <div class="input-wrap">
+                            <input type="text" id="reg-username" placeholder="identifiant_unique"
+                                   autocomplete="username" required>
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <label for="reg-email">Adresse e-mail *</label>
+                        <div class="input-wrap">
+                            <input type="email" id="reg-email" placeholder="exemple@entreprise.ma"
+                                   autocomplete="email" required>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Info banner: password sent by email -->
+                <div style="background:linear-gradient(135deg,#fff7ed,#fef3e2);border:1.5px solid #fed7aa;border-radius:12px;padding:14px 18px;display:flex;align-items:flex-start;gap:12px;">
+                    <div style="font-size:22px;flex-shrink:0;">📧</div>
+                    <div>
+                        <p style="font-size:13px;font-weight:700;color:#9a3412;margin:0 0 3px;">Mot de passe envoyé automatiquement</p>
+                        <p style="font-size:12px;color:#57534e;margin:0;line-height:1.5;">
+                            Après inscription, vous recevrez un <strong>mot de passe temporaire par email</strong>.
+                            Vous pourrez le modifier lors de votre première connexion.
+                        </p>
+                    </div>
+                </div>
+
+
+                <div class="form-grid-2">
+                    <div class="field-group">
+                        <label for="reg-company">Raison sociale *</label>
+                        <div class="input-wrap">
+                            <input type="text" id="reg-company" placeholder="Nom de l'entreprise" required>
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <label for="reg-ice">ICE (15 chiffres) *</label>
+                        <div class="input-wrap">
+                            <input type="text" id="reg-ice" placeholder="000000000000000"
+                                   pattern="[0-9]{15}" maxlength="15" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label for="reg-category">Catégorie d'activité *</label>
+                    <div class="input-wrap">
+                        <select id="reg-category" required onchange="toggleAutreField('reg-category','reg-category-autre')" style="width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;color:var(--text-dark);background:var(--white);outline:none;">
+                            <option value="">— Sélectionner votre catégorie —</option>
+                            <optgroup label="🏗️ Travaux">
+                                <option value="TRAVAUX_GENIE_CIVIL">Travaux de génie civil</option>
+                                <option value="TRAVAUX_HYDRAULIQUE">Travaux d'hydraulique</option>
+                                <option value="TRAVAUX_ELECTRIQUE">Travaux électriques</option>
+                                <option value="TRAVAUX_BATIMENT">Travaux de bâtiment</option>
+                                <option value="TRAVAUX_ASSAINISSEMENT">Travaux d'assainissement</option>
+                            </optgroup>
+                            <optgroup label="📦 Fournitures &amp; Équipements">
+                                <option value="FOURNITURES_ELECTRIQUES">Fournitures électriques</option>
+                                <option value="FOURNITURES_MECANIQUES">Fournitures mécaniques</option>
+                                <option value="FOURNITURES_INFORMATIQUES">Fournitures informatiques</option>
+                                <option value="MATERIAUX_CONSTRUCTION">Matériaux de construction</option>
+                                <option value="PRODUITS_CHIMIQUES">Produits chimiques &amp; réactifs</option>
+                                <option value="EQUIPEMENTS_POMPAGE">Équipements de pompage</option>
+                                <option value="EQUIPEMENTS_MESURE">Équipements de mesure &amp; contrôle</option>
+                                <option value="TUYAUTERIE_ROBINETTERIE">Tuyauterie &amp; robinetterie</option>
+                            </optgroup>
+                            <optgroup label="🔧 Services">
+                                <option value="SERVICES_INGENIERIE">Services d'ingénierie</option>
+                                <option value="SERVICES_MAINTENANCE">Services de maintenance</option>
+                                <option value="SERVICES_INFORMATIQUES">Services informatiques &amp; IT</option>
+                                <option value="SERVICES_FORMATION">Formation &amp; conseil</option>
+                                <option value="ETUDES_TOPOGRAPHIE">Études &amp; topographie</option>
+                                <option value="CONTROLE_QUALITE">Contrôle qualité &amp; laboratoire</option>
+                                <option value="TRANSPORT_LOGISTIQUE">Transport &amp; logistique</option>
+                            </optgroup>
+                            <optgroup label="📋 Général">
+                                <option value="MIXTE">Prestation mixte</option>
+                                <option value="AUTRE">Autre (préciser ci-dessous)</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                    <div id="reg-category-autre" style="display:none;margin-top:8px;">
+                        <input type="text" id="reg-category-autre-text" placeholder="Précisez votre catégorie d'activité..."
+                               style="width:100%;padding:12px 16px;border:1.5px solid var(--orange-light);border-radius:10px;font-size:14px;outline:none;background:#fffbf7;">
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <div class="checkbox-row">
+                        <input type="checkbox" id="terms" required>
+                        <label for="terms" style="font-weight:400;cursor:pointer;">
+                            J'accepte les <a href="#" style="color:var(--orange);font-weight:600;">conditions d'utilisation</a>
+                            et la politique de confidentialité de la plateforme.
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary" id="register-btn">Créer mon compte</button>
+            </form>
+        </div>
+
+    </div>
+
+    <!-- RIGHT: Illustration -->
+    <div class="illus-panel">
+        <img src="/images/login_illustration.jpg" alt="Portail Fournisseur ONEE"
+             style="width:100%;height:100%;object-fit:cover;display:block;">
+    </div>
+</div>
+
+<!-- ════ FORGOT PASSWORD MODAL ════ -->
+<div class="modal-overlay" id="forgotModal">
+    <div class="modal-box">
+        <h3>🔑 Mot de passe oublié ?</h3>
+        <p>Entrez votre adresse e-mail et nous vous enverrons un lien de réinitialisation de mot de passe.</p>
+
+        <div class="alert alert-error" id="forgot-error"></div>
+        <div class="alert alert-success" id="forgot-success"></div>
+
+        <div class="field-group">
+            <label for="forgot-email">Adresse e-mail</label>
+            <div class="input-wrap">
+                <input type="email" id="forgot-email" placeholder="exemple@entreprise.ma" required>
+            </div>
+        </div>
+
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeForgotModal()">Annuler</button>
+            <button class="btn-send" onclick="handleForgotPassword()">Envoyer le lien</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ─── Tab switching ───────────────────────────────────────────────────
+    function switchTab(tab) {
+        document.getElementById('section-login').style.display    = tab === 'login'    ? '' : 'none';
+        document.getElementById('section-register').style.display = tab === 'register' ? '' : 'none';
+        document.getElementById('tab-login').classList.toggle('active',    tab === 'login');
+        document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+        clearAlerts();
+    }
+
+    function clearAlerts() {
+        document.querySelectorAll('.alert').forEach(el => el.classList.remove('show'));
+    }
+
+    // ─── Show/Hide password ──────────────────────────────────────────────
+    function togglePw(inputId, btn) {
+        const input = document.getElementById(inputId);
+        const isHidden = input.type === 'password';
+        input.type = isHidden ? 'text' : 'password';
+        btn.textContent = isHidden ? '🙈' : '👁';
+    }
+
+    // ─── Password strength meter (DGSSI 2.1.8) ──────────────────────────
+    const COLORS  = ['#ef4444','#f59e0b','#3b82f6','#10b981'];
+    const LABELS  = ['Faible','Moyen','Fort','Très fort'];
+
+    function updateStrength(pw) {
+        let score = 0;
+        if (pw.length >= 12)         score++;
+        if (/[A-Z]/.test(pw))        score++;
+        if (/[0-9]/.test(pw))        score++;
+        if (/[^A-Za-z0-9]/.test(pw)) score++;
+
+        ['s1','s2','s3','s4'].forEach((id, i) => {
+            document.getElementById(id).style.background = i < score ? COLORS[score - 1] : 'var(--border)';
+        });
+
+        const lbl = document.getElementById('strength-label');
+        if (pw.length === 0) { lbl.textContent = 'Entrez votre mot de passe'; lbl.style.color = 'var(--text-light)'; }
+        else { lbl.textContent = LABELS[score - 1] || 'Faible'; lbl.style.color = COLORS[score - 1] || COLORS[0]; }
+    }
+
+    // ─── Toggle "Autre" category field ───────────────────────────────────
+    function toggleAutreField(selectId, containerId) {
+        const sel = document.getElementById(selectId);
+        const container = document.getElementById(containerId);
+        const input = document.getElementById(containerId + '-text');
+        if (sel.value === 'AUTRE') {
+            container.style.display = 'block';
+            input.required = true;
+            input.focus();
+        } else {
+            container.style.display = 'none';
+            input.required = false;
+            input.value = '';
+        }
+    }
+
+
+    async function handleLogin(e) {
+        e.preventDefault();
+        clearAlerts();
+        const btn = document.getElementById('login-btn');
+        const username = document.getElementById('login-username').value.trim();
+        const password = document.getElementById('login-password').value;
+
+        if (!username || !password) {
+            showAlert('login-error', 'Veuillez remplir tous les champs.');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span>Connexion en cours...';
+
+        try {
+            const res = await fetch('/api/v1/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+            const data = await res.json();
+
+            if (!res.ok) {
+                showAlert('login-error', data.detail || data.message || 'Identifiants invalides.');
+                return;
+            }
+
+            // DGSSI 8.2.2 — sessionStorage uniquement, jamais localStorage
+            sessionStorage.setItem('token',    data.accessToken);
+            sessionStorage.setItem('username', data.username);
+            sessionStorage.setItem('role',     data.role);
+            sessionStorage.setItem('userId',   data.userId);
+
+            // Si l'utilisateur doit changer son mot de passe temporaire
+            if (data.mustChangePassword) {
+                showChangePwdModal();
+                return;
+            }
+
+            // Rediriger selon le rôle
+            if      (data.role === 'ADMIN')        window.location.href = '/admin.html';
+            else if (data.role === 'SERVICE_ACHAT') window.location.href = '/service_achat.html';
+            else if (data.role === 'SUPPLIER')      window.location.href = '/fournisseur.html';
+            else    window.location.href = '/index.html';
+
+        } catch (err) {
+            showAlert('login-error', 'Erreur de connexion au serveur. Réessayez.');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = 'Se connecter';
+        }
+    }
+
+    // ─── Register ────────────────────────────────────────────────────────
+    async function handleRegister(e) {
+        e.preventDefault();
+        clearAlerts();
+
+        const username = document.getElementById('reg-username').value.trim();
+        const email    = document.getElementById('reg-email').value.trim();
+        const company  = document.getElementById('reg-company').value.trim();
+        const ice      = document.getElementById('reg-ice').value.trim();
+        let category = document.getElementById('reg-category').value.trim().toUpperCase();
+        const categoryAutreText = document.getElementById('reg-category-autre-text').value.trim();
+        if (category === 'AUTRE' && categoryAutreText) {
+            category = 'AUTRE';
+        }
+
+        if (!/^\d{15}$/.test(ice)) {
+            showAlert('register-error', "L'ICE doit contenir exactement 15 chiffres.");
+            return;
+        }
+        if (!category) {
+            showAlert('register-error', "Veuillez sélectionner une catégorie d'activité.");
+            return;
+        }
+        if (category === 'AUTRE' && !categoryAutreText) {
+            showAlert('register-error', "Veuillez préciser votre catégorie dans le champ 'Autre'.");
+            return;
+        }
+
+        const btn = document.getElementById('register-btn');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span>Création en cours...';
+
+        try {
+            const res = await fetch('/api/v1/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, email, companyName: company, ice, category, role: 'SUPPLIER' })
+            });
+            const data = await res.json();
+
+            if (res.status === 202 || data.pendingValidation) {
+                document.getElementById('register-success').textContent =
+                    '✅ Inscription envoyée ! Un mot de passe temporaire vous sera envoyé à ' + email + ' une fois votre compte validé par l\'administrateur.';
+                document.getElementById('register-success').classList.add('show');
+                document.getElementById('registerForm').reset();
+            } else if (!res.ok) {
+                showAlert('register-error', data.detail || data.message || "Erreur lors de l'inscription.");
+            } else {
+                showAlert('register-error', "Réponse inattendue. Contactez l'administrateur.");
+            }
+        } catch (err) {
+            showAlert('register-error', 'Erreur de connexion au serveur.');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = 'Créer mon compte';
+        }
+    }
+
+    // ─── Forgot password modal ───────────────────────────────────────────
+    function openForgotModal() {
+        document.getElementById('forgotModal').classList.add('open');
+        document.getElementById('forgot-email').focus();
+    }
+
+    function closeForgotModal() {
+        document.getElementById('forgotModal').classList.remove('open');
+        document.getElementById('forgot-email').value = '';
+        document.getElementById('forgot-error').classList.remove('show');
+        document.getElementById('forgot-success').classList.remove('show');
+    }
+
+    async function handleForgotPassword() {
+        const email = document.getElementById('forgot-email').value.trim();
+        if (!email) {
+            showAlert('forgot-error', 'Veuillez entrer votre adresse e-mail.');
+            return;
+        }
+        const btn = document.querySelector('.btn-send');
+        if (btn) { btn.disabled = true; btn.textContent = 'Envoi...'; }
+        try {
+            const res = await fetch('/api/v1/auth/forgot-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+            // Always show success (security: never reveal if email exists)
+            document.getElementById('forgot-error').classList.remove('show');
+            showAlert('forgot-success', '📧 Si cette adresse est associée à un compte, un lien de réinitialisation vous a été envoyé. Vérifiez votre boîte mail (et les spams).');
+        } catch (err) {
+            showAlert('forgot-error', 'Erreur de connexion au serveur.');
+        } finally {
+            if (btn) { btn.disabled = false; btn.textContent = 'Envoyer le lien'; }
+        }
+    }
+
+    async function submitResetPassword() {
+        const token   = document.getElementById('resetTokenValue').value;
+        const newPwd  = document.getElementById('reset-new-password').value;
+        const confirm = document.getElementById('reset-confirm-password').value;
+        const errEl   = document.getElementById('reset-pwd-error');
+        const okEl    = document.getElementById('reset-pwd-ok');
+        errEl.style.display = 'none'; okEl.style.display = 'none';
+        if (newPwd.length < 12) {
+            errEl.textContent = '❌ Le mot de passe doit contenir au moins 12 caractères.';
+            errEl.style.display = 'block'; return;
+        }
+        if (newPwd !== confirm) {
+            errEl.textContent = '❌ Les mots de passe ne correspondent pas.';
+            errEl.style.display = 'block'; return;
+        }
+        try {
+            const res = await fetch('/api/v1/auth/reset-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token, newPassword: newPwd })
+            });
+            const data = await res.json().catch(() => ({}));
+            if (res.ok) {
+                okEl.textContent = '✅ Mot de passe réinitialisé ! Vous pouvez vous connecter.';
+                okEl.style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('resetPasswordModal').style.display = 'none';
+                    window.history.replaceState({}, '', '/index.html');
+                }, 2000);
+            } else {
+                errEl.textContent = '❌ ' + (data.detail || data.message || 'Lien invalide ou expiré.');
+                errEl.style.display = 'block';
+            }
+        } catch (e) {
+            errEl.textContent = '❌ Erreur réseau.';
+            errEl.style.display = 'block';
+        }
+    }
+
+    // ─── Helpers ─────────────────────────────────────────────────────────
+    function showAlert(id, msg) {
+        const el = document.getElementById(id);
+        el.textContent = msg;
+        el.classList.add('show');
+    }
+
+    // Close modal on backdrop click
+    document.getElementById('forgotModal').addEventListener('click', function(e) {
+        if (e.target === this) closeForgotModal();
+    });
+
+    // ─── Auto-redirect if already logged in ──────────────────────────────
+    (function() {
+        const token = sessionStorage.getItem('token');
+        const role  = sessionStorage.getItem('role');
+        // Never redirect if a resetToken is in the URL
+        const hasResetToken = new URLSearchParams(window.location.search).has('resetToken');
+        if (token && role && !hasResetToken) {
+            if      (role === 'ADMIN')        window.location.href = '/admin.html';
+            else if (role === 'SERVICE_ACHAT') window.location.href = '/service_achat.html';
+            else if (role === 'SUPPLIER')      window.location.href = '/fournisseur.html';
+        }
+    })();
+
+    // ─── Check URL for resetToken — waits for full DOM ───────────────────
+    document.addEventListener('DOMContentLoaded', function() {
+        const params = new URLSearchParams(window.location.search);
+        const resetToken = params.get('resetToken');
+        if (resetToken) {
+            const tokenField = document.getElementById('resetTokenValue');
+            const modal      = document.getElementById('resetPasswordModal');
+            if (tokenField) tokenField.value = resetToken;
+            if (modal)      modal.style.display = 'flex';
+        }
+    });
+
+    // ─── Change password modal (forced on first login) ──────────────────────
+    function showChangePwdModal() {
+        document.getElementById('changePwdModal').style.display = 'flex';
+    }
+
+    async function submitNewPassword() {
+        const newPwd  = document.getElementById('new-password').value;
+        const confirm = document.getElementById('confirm-password').value;
+        const errEl   = document.getElementById('change-pwd-error');
+        const okEl    = document.getElementById('change-pwd-ok');
+        errEl.style.display = 'none'; okEl.style.display = 'none';
+
+        if (newPwd.length < 12) {
+            errEl.textContent = '❌ Le mot de passe doit contenir au moins 12 caractères.';
+            errEl.style.display = 'block'; return;
+        }
+        if (newPwd !== confirm) {
+            errEl.textContent = '❌ Les deux mots de passe ne correspondent pas.';
+            errEl.style.display = 'block'; return;
+        }
+
+        try {
+            const token    = sessionStorage.getItem('token');
+            const username = sessionStorage.getItem('username');
+            // Read the temp password from the hidden field (pre-filled by user)
+            const currentPwd = document.getElementById('current-temp-password').value;
+            const res = await fetch('/api/v1/auth/change-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+                body: JSON.stringify({ username, currentPassword: currentPwd, newPassword: newPwd })
+            });
+            const data = await res.json().catch(() => ({}));
+            if (res.ok) {
+                okEl.textContent = '✅ Mot de passe changé ! Redirection...';
+                okEl.style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('changePwdModal').style.display = 'none';
+                    const role = sessionStorage.getItem('role');
+                    if      (role === 'ADMIN')        window.location.href = '/admin.html';
+                    else if (role === 'SERVICE_ACHAT') window.location.href = '/service_achat.html';
+                    else                               window.location.href = '/fournisseur.html';
+                }, 1500);
+            } else {
+                errEl.textContent = '❌ ' + (data.detail || data.message || 'Erreur lors du changement.');
+                errEl.style.display = 'block';
+            }
+        } catch (e) {
+            errEl.textContent = '❌ Erreur réseau.';
+            errEl.style.display = 'block';
+        }
+    }
+</script>
+
+<!-- ═══ MODAL: Changement de mot de passe obligatoire ═══ -->
+<div id="changePwdModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(6px);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:white;border-radius:20px;padding:36px;width:90%;max-width:440px;box-shadow:0 24px 60px rgba(0,0,0,0.2);">
+    <div style="text-align:center;margin-bottom:24px;">
+      <div style="background:linear-gradient(135deg,#f97316,#ea580c);width:52px;height:52px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:22px;color:white;margin-bottom:12px;">🔐</div>
+      <h2 style="color:#9a3412;font-size:18px;margin:0 0 6px;">Changement de mot de passe requis</h2>
+      <p style="color:#a8a29e;font-size:13px;margin:0;">Vous utilisez un mot de passe temporaire.<br>Veuillez en définir un nouveau pour continuer.</p>
+    </div>
+
+    <div id="change-pwd-error" style="display:none;background:#fef2f2;color:#b91c1c;border:1px solid #fecaca;border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:14px;"></div>
+    <div id="change-pwd-ok"    style="display:none;background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:14px;"></div>
+
+    <div style="margin-bottom:14px;">
+      <label style="display:block;font-size:12px;font-weight:700;color:#57534e;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;">Mot de passe temporaire (reçu par email)</label>
+      <input id="current-temp-password" type="password" placeholder="Entrez votre mot de passe temporaire"
+             style="width:100%;padding:11px 14px;border:1.5px solid #e7d5bf;border-radius:10px;font-size:13px;outline:none;box-sizing:border-box;">
+    </div>
+
+    <div style="margin-bottom:14px;">
+      <label style="display:block;font-size:12px;font-weight:700;color:#57534e;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;">Nouveau mot de passe <span style="color:#a8a29e;font-weight:400;">(min. 12 caractères)</span></label>
+      <input id="new-password" type="password" placeholder="Nouveau mot de passe"
+             style="width:100%;padding:11px 14px;border:1.5px solid #e7d5bf;border-radius:10px;font-size:13px;outline:none;box-sizing:border-box;">
+    </div>
+
+    <div style="margin-bottom:24px;">
+      <label style="display:block;font-size:12px;font-weight:700;color:#57534e;margin-bottom:6px;text-transform:uppercase;letter-spacing:0.5px;">Confirmer le nouveau mot de passe</label>
+      <input id="confirm-password" type="password" placeholder="Confirmer le mot de passe"
+             style="width:100%;padding:11px 14px;border:1.5px solid #e7d5bf;border-radius:10px;font-size:13px;outline:none;box-sizing:border-box;">
+    </div>
+
+    <button onclick="submitNewPassword()"
+            style="width:100%;padding:13px;background:linear-gradient(135deg,#f97316,#ea580c);color:white;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;">
+      🔒 Enregistrer le nouveau mot de passe
+    </button>
+  </div>
+</div>
+<!-- ═══ MODAL: Réinitialisation de mot de passe (via lien email) ═══ -->
+<div id="resetPasswordModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);backdrop-filter:blur(6px);z-index:9999;align-items:center;justify-content:center;">
+  <div style="background:white;border-radius:20px;padding:36px;width:90%;max-width:440px;box-shadow:0 24px 60px rgba(0,0,0,0.2);">
+    <div style="text-align:center;margin-bottom:24px;">
+      <div style="background:linear-gradient(135deg,#f97316,#ea580c);width:52px;height:52px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;font-weight:900;font-size:22px;color:white;margin-bottom:12px;">🔑</div>
+      <h2 style="color:#9a3412;font-size:18px;margin:0 0 6px;">Nouveau mot de passe</h2>
+      <p style="color:#a8a29e;font-size:13px;margin:0;">Définissez votre nouveau mot de passe.</p>
+    </div>
+    <input type="hidden" id="resetTokenValue">
+    <div id="reset-pwd-error" style="display:none;background:#fef2f2;color:#b91c1c;border:1px solid #fecaca;border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:14px;"></div>
+    <div id="reset-pwd-ok"    style="display:none;background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;border-radius:8px;padding:10px 14px;font-size:13px;margin-bottom:14px;"></div>
+    <div style="margin-bottom:14px;">
+      <label style="display:block;font-size:12px;font-weight:700;color:#57534e;margin-bottom:6px;text-transform:uppercase;">Nouveau mot de passe <span style="color:#a8a29e;font-weight:400;">(min. 12 car.)</span></label>
+      <input id="reset-new-password" type="password" placeholder="Nouveau mot de passe"
+             style="width:100%;padding:11px 14px;border:1.5px solid #e7d5bf;border-radius:10px;font-size:13px;outline:none;box-sizing:border-box;">
+    </div>
+    <div style="margin-bottom:24px;">
+      <label style="display:block;font-size:12px;font-weight:700;color:#57534e;margin-bottom:6px;text-transform:uppercase;">Confirmer le mot de passe</label>
+      <input id="reset-confirm-password" type="password" placeholder="Confirmer le mot de passe"
+             style="width:100%;padding:11px 14px;border:1.5px solid #e7d5bf;border-radius:10px;font-size:13px;outline:none;box-sizing:border-box;">
+    </div>
+    <button onclick="submitResetPassword()"
+            style="width:100%;padding:13px;background:linear-gradient(135deg,#f97316,#ea580c);color:white;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;">
+      🔒 Enregistrer le nouveau mot de passe
+    </button>
+  </div>
+</div>
+
+</body>
+</html>
+

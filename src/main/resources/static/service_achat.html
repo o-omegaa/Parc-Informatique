@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Achat — Portail Fournisseur ONEE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root{--orange:#f97316;--orange-dark:#ea580c;--orange-light:#fed7aa;--orange-xlight:#fff7ed;--beige:#fef3e2;--beige-dark:#fde8c4;--brown:#9a3412;--text-dark:#1c1917;--text-mid:#57534e;--text-light:#a8a29e;--white:#ffffff;--border:#e7d5bf;--sidebar-w:240px;--success:#16a34a;--danger:#dc2626;--info:#2563eb;--warning:#d97706;}
+        *{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif;}
+        body{background:var(--beige);color:var(--text-dark);display:flex;min-height:100vh;}
+        .sidebar{width:var(--sidebar-w);background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;box-shadow:2px 0 12px rgba(0,0,0,0.06);}
+        .sidebar-logo{padding:24px 20px 20px;border-bottom:1px solid var(--border);}
+        .sidebar-logo .logo-badge{background:linear-gradient(135deg,var(--orange),var(--orange-dark));color:white;width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;margin-bottom:10px;overflow:hidden;padding:0;}
+        .sidebar-logo .logo-badge img{width:100%;height:100%;object-fit:cover;border-radius:10px;}
+        .sidebar-logo h2{font-size:14px;font-weight:700;color:var(--brown);line-height:1.3;}
+        .sidebar-logo span{font-size:11px;color:var(--text-light);}
+        .btn-sm{padding:7px 13px;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;transition:opacity 0.15s;}
+        .btn-sm:hover{opacity:0.85;}
+        .btn-info{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;}
+        .sidebar-nav{flex:1;padding:16px 12px;overflow-y:auto;}
+        .nav-section-title{font-size:10px;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:1px;padding:0 8px;margin:12px 0 6px;}
+        .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text-mid);transition:all 0.15s;margin-bottom:2px;border:none;background:none;width:100%;text-align:left;}
+        .nav-item:hover{background:var(--orange-xlight);color:var(--orange-dark);}
+        .nav-item.active{background:linear-gradient(135deg,var(--orange),var(--orange-dark));color:white;font-weight:600;box-shadow:0 4px 12px rgba(249,115,22,0.3);}
+        .nav-item .icon{font-size:16px;width:20px;text-align:center;}
+        .badge-pill{margin-left:auto;background:var(--danger);color:white;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;}
+        .sidebar-footer{padding:16px;border-top:1px solid var(--border);}
+        .user-card{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+        .user-avatar{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--orange),var(--orange-dark));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:14px;}
+        .user-info p{font-size:13px;font-weight:600;color:var(--text-dark);}
+        .user-info span{font-size:11px;color:var(--text-light);}
+        .btn-logout{width:100%;padding:9px;border:1.5px solid var(--border);border-radius:10px;background:none;font-size:13px;font-weight:600;color:var(--text-mid);cursor:pointer;}
+        .btn-logout:hover{background:var(--orange-xlight);color:var(--orange-dark);}
+        .main{margin-left:var(--sidebar-w);flex:1;min-height:100vh;display:flex;flex-direction:column;}
+        .topbar{background:var(--white);border-bottom:1px solid var(--border);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+        .topbar h1{font-size:18px;font-weight:700;color:var(--brown);}
+        .content{padding:28px;flex:1;}
+        .section{display:none;animation:fadeIn 0.3s ease;}
+        .section.active{display:block;}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+        .stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;margin-bottom:28px;}
+        .stat-card{background:var(--white);border-radius:16px;padding:20px;border:1px solid var(--border);}
+        .stat-card.highlight{background:linear-gradient(135deg,var(--orange),var(--orange-dark));border:none;}
+        .stat-card.highlight .stat-value,.stat-card.highlight .stat-label{color:white;}
+        .stat-icon{font-size:24px;margin-bottom:12px;}
+        .stat-value{font-size:28px;font-weight:800;color:var(--brown);}
+        .stat-label{font-size:12px;color:var(--text-light);font-weight:500;margin-top:4px;}
+        .card{background:var(--white);border-radius:16px;border:1px solid var(--border);overflow:hidden;margin-bottom:20px;}
+        .card-header{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+        .card-header h3{font-size:15px;font-weight:700;color:var(--text-dark);}
+        .card-body{padding:0;}
+        .table-wrap{overflow-x:auto;}
+        table{width:100%;border-collapse:collapse;}
+        th{background:var(--beige);padding:11px 16px;text-align:left;font-size:11px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;}
+        td{padding:12px 16px;font-size:13px;color:var(--text-dark);border-top:1px solid var(--border);}
+        tr:hover td{background:var(--orange-xlight);}
+        .empty-state{text-align:center;padding:48px 24px;color:var(--text-light);}
+        .empty-state .emoji{font-size:40px;margin-bottom:12px;}
+        .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+        .badge-PUBLIE{background:rgba(22,163,74,0.12);color:var(--success);}
+        .badge-BROUILLON{background:rgba(168,162,158,0.15);color:var(--text-mid);}
+        .badge-CLOS{background:rgba(37,99,235,0.12);color:var(--info);}
+        .badge-ANNULE{background:rgba(220,38,38,0.12);color:var(--danger);}
+        .badge-SOUMISE{background:rgba(37,99,235,0.12);color:var(--info);}
+        .badge-EN_EXAMEN{background:rgba(217,119,6,0.12);color:var(--warning);}
+        .badge-ACCEPTEE{background:rgba(22,163,74,0.12);color:var(--success);}
+        .badge-REJETEE{background:rgba(220,38,38,0.12);color:var(--danger);}
+        .badge-EN_ATTENTE{background:rgba(217,119,6,0.12);color:var(--warning);}
+        .badge-VALIDEE{background:rgba(37,99,235,0.12);color:var(--info);}
+        .badge-PAYEE{background:rgba(22,163,74,0.12);color:var(--success);}
+        .badge-TRAVAUX,.badge-FOURNITURES,.badge-SERVICES,.badge-MIXTE{background:rgba(234,88,12,0.12);color:var(--orange-dark);}
+        .btn-sm{padding:5px 12px;border-radius:8px;font-size:12px;font-weight:600;border:none;cursor:pointer;transition:all 0.15s;}
+        .btn-success{background:rgba(22,163,74,0.1);color:var(--success);border:1px solid rgba(22,163,74,0.25);}
+        .btn-success:hover{background:var(--success);color:white;}
+        .btn-danger{background:rgba(220,38,38,0.1);color:var(--danger);border:1px solid rgba(220,38,38,0.25);}
+        .btn-danger:hover{background:var(--danger);color:white;}
+        .btn-info{background:rgba(37,99,235,0.1);color:var(--info);border:1px solid rgba(37,99,235,0.25);}
+        .btn-info:hover{background:var(--info);color:white;}
+        .btn-warning{background:rgba(217,119,6,0.1);color:var(--warning);border:1px solid rgba(217,119,6,0.25);}
+        .btn-warning:hover{background:var(--warning);color:white;}
+        .btn-primary{background:linear-gradient(135deg,var(--orange),var(--orange-dark));color:white;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;border:none;cursor:pointer;transition:box-shadow 0.15s;}
+        .btn-primary:hover{box-shadow:0 6px 18px rgba(249,115,22,0.35);}
+        .toolbar{display:flex;align-items:center;gap:12px;padding:14px 22px;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+        .search-input{flex:1;min-width:160px;padding:9px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none;background:var(--beige);}
+        .search-input:focus{border-color:var(--orange);}
+        select.filter-select{padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none;background:var(--beige);color:var(--text-dark);}
+        select.filter-select:focus{border-color:var(--orange);}
+        /* Form */
+        .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+        .field-group{margin-bottom:16px;}
+        .field-group label{display:block;font-size:13px;font-weight:600;color:var(--text-dark);margin-bottom:6px;}
+        .field-group input,.field-group select,.field-group textarea{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none;background:var(--white);color:var(--text-dark);}
+        .field-group input:focus,.field-group select:focus,.field-group textarea:focus{border-color:var(--orange);}
+        .field-group textarea{min-height:100px;resize:vertical;}
+        /* Modal */
+        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.35);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+        .modal-overlay.open{opacity:1;pointer-events:all;}
+        .modal-box{background:var(--white);border-radius:20px;padding:32px;width:90%;max-width:560px;max-height:90vh;overflow-y:auto;box-shadow:0 24px 60px rgba(0,0,0,0.15);transform:translateY(10px);transition:transform 0.25s;}
+        .modal-overlay.open .modal-box{transform:translateY(0);}
+        .modal-title{font-size:18px;font-weight:800;color:var(--brown);margin-bottom:20px;}
+        .modal-footer{display:flex;gap:12px;margin-top:24px;}
+        .btn-cancel{flex:1;padding:11px;border:1.5px solid var(--border);border-radius:10px;background:none;font-size:13px;font-weight:600;color:var(--text-mid);cursor:pointer;}
+        .btn-cancel:hover{background:var(--beige);}
+        .btn-confirm{flex:1;padding:11px;background:linear-gradient(135deg,var(--orange),var(--orange-dark));color:white;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;}
+        .btn-confirm-danger{flex:1;padding:11px;background:linear-gradient(135deg,#dc2626,#b91c1c);color:white;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;}
+        .toast{position:fixed;bottom:24px;right:24px;padding:13px 22px;border-radius:12px;color:white;font-weight:600;font-size:13px;z-index:9999;animation:fadeIn 0.3s ease;box-shadow:0 8px 24px rgba(0,0,0,0.15);}
+        .toast-success{background:linear-gradient(135deg,#16a34a,#15803d);}
+        .toast-error{background:linear-gradient(135deg,#dc2626,#b91c1c);}
+        .toast-info{background:linear-gradient(135deg,var(--orange),var(--orange-dark));}
+        .detail-row{display:flex;gap:8px;margin-bottom:10px;font-size:13px;}
+        .detail-label{font-weight:600;color:var(--text-mid);min-width:130px;}
+        .detail-value{color:var(--text-dark);}
+    </style>
+</head>
+<body>
+
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <div class="logo-badge"><img src="/images/login_illustration.jpg" alt="Logo"></div>
+        <span>Service Achat</span>
+    </div>
+    <nav class="sidebar-nav">
+        <div class="nav-section-title">Vue d'ensemble</div>
+        <button class="nav-item active" onclick="showSection('dashboard',this)"><span class="icon">🏠</span> Tableau de bord</button>
+
+        <div class="nav-section-title">Appels d'offres</div>
+        <button class="nav-item" onclick="showSection('mes-appels',this)"><span class="icon">📢</span> Mes appels d'offres</button>
+        <button class="nav-item" onclick="showSection('nouvel-ao',this)"><span class="icon">➕</span> Nouvel appel d'offre</button>
+
+        <div class="nav-section-title">Traitement</div>
+        <button class="nav-item" id="nav-candidatures" onclick="showSection('candidatures',this)">
+            <span class="icon">📥</span> Candidatures reçues
+            <span class="badge-pill" id="cand-count">0</span>
+        </button>
+        <button class="nav-item" id="nav-factures" onclick="showSection('factures',this)">
+            <span class="icon">🧾</span> Factures à traiter
+            <span class="badge-pill" id="fact-count">0</span>
+        </button>
+    </nav>
+    <div class="sidebar-footer">
+        <div class="user-card">
+            <div class="user-avatar" id="avatarInitial"><span id="achatAvatarLetter">S</span></div>
+            <div class="user-info"><p id="sidebarUsername">Service Achat</p><span>Service Achat</span></div>
+        </div>
+        <button class="btn-logout" onclick="logout()">🚪 Se déconnecter</button>
+    </div>
+</aside>
+
+<main class="main">
+    <div class="topbar">
+        <h1 id="topbarTitle">Tableau de bord</h1>
+        <div style="display:flex;gap:10px;">
+            <button class="btn-primary" onclick="showSection('nouvel-ao',document.getElementById('nav-nouvel'))">➕ Nouvel appel d'offre</button>
+        </div>
+    </div>
+    <div class="content">
+
+        <!-- Dashboard -->
+        <div class="section active" id="section-dashboard">
+            <div class="stats-grid">
+                <div class="stat-card highlight"><div class="stat-icon">📢</div><div class="stat-value" id="d-mesAO">—</div><div class="stat-label">Mes appels d'offres</div></div>
+                <div class="stat-card"><div class="stat-icon">📥</div><div class="stat-value" id="d-candidatures">—</div><div class="stat-label">Candidatures reçues</div></div>
+                <div class="stat-card"><div class="stat-icon">⏳</div><div class="stat-value" id="d-enExamen">—</div><div class="stat-label">En attente d'examen</div></div>
+                <div class="stat-card"><div class="stat-icon">🧾</div><div class="stat-value" id="d-factures">—</div><div class="stat-label">Factures à valider</div></div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h3>📥 Dernières candidatures reçues</h3>
+                    <div style="display:flex;gap:8px;">
+                        <button class="btn-sm btn-info" onclick="exportExcel('dash-candidatures','Candidatures_recentes')">📊 Excel</button>
+                        <button class="btn-sm btn-info" onclick="exportPDF('dash-candidatures','Candidatures récentes','📥 Dernières candidatures')">📄 PDF</button>
+                        <button class="btn-sm" style="background:rgba(28,25,23,0.08);color:var(--text-dark);border:1px solid var(--border);" onclick="printTable('dash-candidatures','Candidatures récentes')">🖨️ Imprimer</button>
+                    </div>
+                </div>
+                <div class="card-body table-wrap"><table><thead><tr><th>Fournisseur</th><th>Appel d'offre</th><th>Montant</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="dash-candidatures"></tbody></table></div>
+            </div>
+        </div>
+
+        <!-- Mes appels d'offres -->
+        <div class="section" id="section-mes-appels">
+            <div class="card">
+                <div class="card-header">
+                    <h3>📢 Mes appels d'offres</h3>
+                    <div style="display:flex;gap:8px;">
+                        <button class="btn-primary" onclick="showSection('nouvel-ao',null)">➕ Nouveau</button>
+                        <button class="btn-sm btn-info" onclick="exportExcel('aoTable','Appels_offres')">📊 Excel</button>
+                        <button class="btn-sm btn-info" onclick="exportPDF('aoTable','Mes appels d offres','📢 Mes appels d offres')">📄 PDF</button>
+                        <button class="btn-sm" style="background:rgba(28,25,23,0.08);color:var(--text-dark);border:1px solid var(--border);" onclick="printTable('aoTable','Mes appels d offres')">🖨️ Imprimer</button>
+                    </div>
+                </div>
+                <div class="toolbar">
+                    <input class="search-input" type="text" placeholder="🔍 Rechercher..." oninput="filterAO(this.value)">
+                    <select class="filter-select" onchange="filterAOStatus(this.value)">
+                        <option value="">Tous les statuts</option>
+                        <option value="BROUILLON">Brouillon</option>
+                        <option value="PUBLIE">Publié</option>
+                        <option value="CLOS">Clos</option>
+                        <option value="ANNULE">Annulé</option>
+                    </select>
+                </div>
+                <div class="card-body table-wrap">
+                    <table><thead><tr><th>ID</th><th>Titre</th><th>Catégorie</th><th>Date clôture</th><th>Statut</th><th>Actions</th></tr></thead>
+                    <tbody id="aoTable"></tbody></table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nouvel AO -->
+        <div class="section" id="section-nouvel-ao">
+            <div class="card">
+                <div class="card-header"><h3 id="aoFormTitle">➕ Nouvel appel d'offre</h3></div>
+                <div style="padding:24px;">
+                    <input type="hidden" id="ao-edit-id">
+                    <div class="form-grid">
+                        <div class="field-group" style="grid-column:1/-1">
+                            <label>Titre *</label>
+                            <input type="text" id="ao-titre" placeholder="Titre de l'appel d'offre">
+                        </div>
+                        <div class="field-group" style="grid-column:1/-1">
+                            <label>Description *</label>
+                            <textarea id="ao-description" placeholder="Description détaillée de l'appel d'offre, cahier des charges..."></textarea>
+                        </div>
+                        <div class="field-group">
+                            <label>Catégorie *</label>
+                            <select id="ao-categorie" required onchange="toggleAutreAO()">
+                                <option value="">— Sélectionner une catégorie —</option>
+                                <optgroup label="🏗️ Travaux">
+                                    <option value="TRAVAUX_GENIE_CIVIL">Travaux de génie civil</option>
+                                    <option value="TRAVAUX_HYDRAULIQUE">Travaux d'hydraulique</option>
+                                    <option value="TRAVAUX_ELECTRIQUE">Travaux électriques</option>
+                                    <option value="TRAVAUX_BATIMENT">Travaux de bâtiment</option>
+                                    <option value="TRAVAUX_ASSAINISSEMENT">Travaux d'assainissement</option>
+                                </optgroup>
+                                <optgroup label="📦 Fournitures &amp; Équipements">
+                                    <option value="FOURNITURES_ELECTRIQUES">Fournitures électriques</option>
+                                    <option value="FOURNITURES_MECANIQUES">Fournitures mécaniques</option>
+                                    <option value="FOURNITURES_INFORMATIQUES">Fournitures informatiques</option>
+                                    <option value="MATERIAUX_CONSTRUCTION">Matériaux de construction</option>
+                                    <option value="PRODUITS_CHIMIQUES">Produits chimiques &amp; réactifs</option>
+                                    <option value="EQUIPEMENTS_POMPAGE">Équipements de pompage</option>
+                                    <option value="EQUIPEMENTS_MESURE">Équipements de mesure &amp; contrôle</option>
+                                    <option value="TUYAUTERIE_ROBINETTERIE">Tuyauterie &amp; robinetterie</option>
+                                </optgroup>
+                                <optgroup label="🔧 Services">
+                                    <option value="SERVICES_INGENIERIE">Services d'ingénierie</option>
+                                    <option value="SERVICES_MAINTENANCE">Services de maintenance</option>
+                                    <option value="SERVICES_INFORMATIQUES">Services informatiques &amp; IT</option>
+                                    <option value="SERVICES_FORMATION">Formation &amp; conseil</option>
+                                    <option value="ETUDES_TOPOGRAPHIE">Études &amp; topographie</option>
+                                    <option value="CONTROLE_QUALITE">Contrôle qualité &amp; laboratoire</option>
+                                    <option value="TRANSPORT_LOGISTIQUE">Transport &amp; logistique</option>
+                                </optgroup>
+                                <optgroup label="📋 Général">
+                                    <option value="MIXTE">Prestation mixte</option>
+                                    <option value="AUTRE">Autre (préciser ci-dessous)</option>
+                                </optgroup>
+                            </select>
+                            <div id="ao-categorie-autre" style="display:none;margin-top:8px;">
+                                <input type="text" id="ao-categorie-autre-text"
+                                       placeholder="Précisez la catégorie de cet appel d'offre..."
+                                       style="width:100%;padding:11px 14px;border:1.5px solid var(--orange-light);border-radius:10px;font-size:13px;outline:none;background:#fffbf7;">
+                            </div>
+                        </div>
+                        <div class="field-group">
+                            <label>Budget estimé (MAD)</label>
+                            <input type="number" id="ao-budget" placeholder="Optionnel" min="0">
+                        </div>
+                        <div class="field-group">
+                            <label>Date de clôture *</label>
+                            <input type="datetime-local" id="ao-cloture">
+                        </div>
+                    </div>
+                    <div id="ao-error" style="color:var(--danger);font-size:13px;margin-bottom:12px;display:none;"></div>
+                    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+                        <button class="btn-primary" onclick="saveAO('BROUILLON')">💾 Enregistrer brouillon</button>
+                        <button class="btn-primary" style="background:linear-gradient(135deg,#16a34a,#15803d);" onclick="saveAO('PUBLIE')">📢 Publier directement</button>
+                        <button style="padding:10px 20px;border:1.5px solid var(--border);border-radius:10px;background:none;font-size:13px;font-weight:600;color:var(--text-mid);cursor:pointer;" onclick="resetAOForm()">✕ Annuler</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Candidatures -->
+        <div class="section" id="section-candidatures">
+            <div class="card">
+                <div class="card-header">
+                    <h3>📥 Candidatures reçues</h3>
+                    <div style="display:flex;gap:8px;">
+                        <button class="btn-sm btn-info" onclick="exportExcel('candidaturesTable','Candidatures')">📊 Excel</button>
+                        <button class="btn-sm btn-info" onclick="exportPDF('candidaturesTable','Candidatures','📥 Candidatures')">📄 PDF</button>
+                        <button class="btn-sm" style="background:rgba(28,25,23,0.08);color:var(--text-dark);border:1px solid var(--border);" onclick="printTable('candidaturesTable','Candidatures')">🖨️ Imprimer</button>
+                    </div>
+                </div>
+                <div class="toolbar">
+                    <select class="filter-select" onchange="filterCandidatures(this.value)">
+                        <option value="">Tous les statuts</option>
+                        <option value="SOUMISE">Soumises</option>
+                        <option value="EN_EXAMEN">En examen</option>
+                        <option value="ACCEPTEE">Acceptées</option>
+                        <option value="REJETEE">Rejetées</option>
+                    </select>
+                </div>
+                <div class="card-body table-wrap">
+                    <table><thead><tr><th>ID</th><th>Fournisseur</th><th>Appel d'offre</th><th>Montant proposé</th><th>Date</th><th>Statut</th><th>Actions</th></tr></thead>
+                    <tbody id="candidaturesTable"></tbody></table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Factures -->
+        <div class="section" id="section-factures">
+            <div class="card">
+                <div class="card-header">
+                    <h3>🧾 Factures à traiter</h3>
+                    <div style="display:flex;gap:8px;">
+                        <button class="btn-sm btn-info" onclick="exportExcel('facturesTable','Factures')">📊 Excel</button>
+                        <button class="btn-sm btn-info" onclick="exportPDF('facturesTable','Factures','🧾 Factures')">📄 PDF</button>
+                        <button class="btn-sm" style="background:rgba(28,25,23,0.08);color:var(--text-dark);border:1px solid var(--border);" onclick="printTable('facturesTable','Factures')">🖨️ Imprimer</button>
+                    </div>
+                </div>
+                <div class="toolbar">
+                    <select class="filter-select" onchange="filterFactures(this.value)">
+                        <option value="">Tous les statuts</option>
+                        <option value="EN_ATTENTE">En attente</option>
+                        <option value="VALIDEE">Validées</option>
+                        <option value="PAYEE">Payées</option>
+                        <option value="REJETEE">Rejetées</option>
+                    </select>
+                </div>
+                <div class="card-body table-wrap">
+                    <table><thead><tr><th>ID</th><th>Référence</th><th>Fournisseur</th><th>Montant</th><th>Émission</th><th>Échéance</th><th>Statut</th><th>Actions</th></tr></thead>
+                    <tbody id="facturesTable"></tbody></table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</main>
+
+<!-- Modal: Voir candidature -->
+<div class="modal-overlay" id="candidatureModal">
+    <div class="modal-box">
+        <div class="modal-title">📝 Détail de la candidature</div>
+        <div id="candidature-details"></div>
+        <div class="field-group" id="commentaire-group">
+            <label>Commentaire (optionnel)</label>
+            <textarea id="candidature-commentaire" placeholder="Motif de la décision..."></textarea>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal('candidatureModal')">Fermer</button>
+            <button class="btn-confirm-danger" id="btn-rejeter" onclick="submitDecision('REJETEE')">❌ Rejeter</button>
+            <button class="btn-confirm" id="btn-accepter" onclick="submitDecision('ACCEPTEE')">✅ Accepter</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Facture -->
+<div class="modal-overlay" id="factureModal">
+    <div class="modal-box">
+        <div class="modal-title" id="factureModalTitle">🧾 Détail de la facture</div>
+        <div id="facture-details"></div>
+        <div class="field-group" id="fact-commentaire-group">
+            <label>Commentaire</label>
+            <textarea id="facture-commentaire" placeholder="Commentaire..."></textarea>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal('factureModal')">Fermer</button>
+            <button class="btn-confirm-danger" id="btn-fact-rejeter" onclick="submitFactureAction('rejeter')">❌ Rejeter</button>
+            <button class="btn-info btn-sm" style="flex:1;padding:11px;font-size:13px;" id="btn-fact-payer" onclick="submitFactureAction('payer')">💰 Marquer payée</button>
+            <button class="btn-confirm" id="btn-fact-valider" onclick="submitFactureAction('valider')">✅ Valider</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const token=sessionStorage.getItem('token');
+    const role=sessionStorage.getItem('role');
+    if(!token||role!=='SERVICE_ACHAT'){window.location.href='/index.html';}
+    const userId=parseInt(sessionStorage.getItem('userId'));
+    document.getElementById('sidebarUsername').textContent=sessionStorage.getItem('username')||'Service Achat';
+    document.getElementById('achatAvatarLetter').textContent=(sessionStorage.getItem('username')||'S')[0].toUpperCase();
+
+    async function api(method,url,body=null){
+        const opts={method,headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'}};
+        if(body)opts.body=JSON.stringify(body);
+        const res=await fetch(url,opts);
+        if(res.status===401){sessionStorage.clear();window.location.href='/index.html';}
+        if(res.status===204)return null;
+        return res.json();
+    }
+    function fmt(d){return d?new Date(d).toLocaleDateString('fr-FR',{year:'numeric',month:'short',day:'numeric'}):'—';}
+    function fmtMoney(n){return n?new Intl.NumberFormat('fr-MA',{style:'currency',currency:'MAD'}).format(n):'—';}
+    function badge(s){
+        const LABELS={BROUILLON:'Brouillon',PUBLIE:'Publié',CLOS:'Clos',ANNULE:'Annulé',SOUMISE:'Soumise',EN_EXAMEN:'En examen',ACCEPTEE:'Acceptée',REJETEE:'Rejetée',EN_ATTENTE:'En attente',VALIDEE:'Validée',PAYEE:'Payée',
+            TRAVAUX_GENIE_CIVIL:'Génie civil',TRAVAUX_HYDRAULIQUE:'Hydraulique',TRAVAUX_ELECTRIQUE:'Électrique',TRAVAUX_BATIMENT:'Bâtiment',TRAVAUX_ASSAINISSEMENT:'Assainissement',
+            FOURNITURES_ELECTRIQUES:'Fourn. électrique',FOURNITURES_MECANIQUES:'Fourn. mécanique',FOURNITURES_INFORMATIQUES:'Fourn. informatique',MATERIAUX_CONSTRUCTION:'Matériaux',
+            PRODUITS_CHIMIQUES:'Produits chimiques',EQUIPEMENTS_POMPAGE:'Équip. pompage',EQUIPEMENTS_MESURE:'Équip. mesure',TUYAUTERIE_ROBINETTERIE:'Tuyauterie',
+            SERVICES_INGENIERIE:'Ingénierie',SERVICES_MAINTENANCE:'Maintenance',SERVICES_INFORMATIQUES:'IT',SERVICES_FORMATION:'Formation',ETUDES_TOPOGRAPHIE:'Études/Topo',CONTROLE_QUALITE:'Contrôle qual.',TRANSPORT_LOGISTIQUE:'Transport',
+            MIXTE:'Mixte',AUTRE:'Autre'};
+        return `<span class="badge badge-${s}">${LABELS[s]||s}</span>`;}
+    function toast(msg,type='success'){const t=document.createElement('div');t.className=`toast toast-${type}`;t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),3500);}
+    function closeModal(id){document.getElementById(id).classList.remove('open');}
+    document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',function(e){if(e.target===this)closeModal(this.id);}));
+
+    function showSection(id,btn){
+        document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+        document.getElementById('section-'+id).classList.add('active');
+        if(btn)btn.classList.add('active');
+        const titles={'dashboard':'Tableau de bord','mes-appels':'Mes appels d\'offres','nouvel-ao':'Nouvel appel d\'offre','candidatures':'Candidatures reçues','factures':'Factures à traiter'};
+        document.getElementById('topbarTitle').textContent=titles[id]||id;
+        loadSection(id);
+    }
+    function loadSection(id){
+        if(id==='dashboard')loadDashboard();
+        else if(id==='mes-appels')loadMesAO();
+        else if(id==='candidatures')loadCandidatures();
+        else if(id==='factures')loadFactures();
+    }
+
+    // ── Dashboard ──
+    let allAO=[],allDemandes=[],allFactures=[];
+    async function loadDashboard(){
+        const [ao,dem,fac]=await Promise.all([api('GET','/api/v1/appels-offres/mes-appels'),api('GET','/api/v1/demandes'),api('GET','/api/v1/factures')]);
+        allAO=Array.isArray(ao)?ao:[];allDemandes=Array.isArray(dem)?dem:[];allFactures=Array.isArray(fac)?fac:[];
+        document.getElementById('d-mesAO').textContent=allAO.length;
+        document.getElementById('d-candidatures').textContent=allDemandes.length;
+        document.getElementById('d-enExamen').textContent=allDemandes.filter(d=>d.status==='SOUMISE'||d.status==='EN_EXAMEN').length;
+        const factAtt=allFactures.filter(f=>f.status==='EN_ATTENTE').length;
+        document.getElementById('d-factures').textContent=factAtt;
+        document.getElementById('cand-count').textContent=allDemandes.filter(d=>d.status==='SOUMISE').length;
+        document.getElementById('fact-count').textContent=factAtt;
+        const recent=allDemandes.slice(-8).reverse();
+        document.getElementById('dash-candidatures').innerHTML=recent.length?recent.map(d=>`<tr><td>${d.fournisseurUserId}</td><td>#${d.appelOffreId}</td><td>${fmtMoney(d.montantPropose)}</td><td>${fmt(d.dateSubmission||d.createdAt)}</td><td>${badge(d.status)}</td><td>${d.status==='SOUMISE'||d.status==='EN_EXAMEN'?`<button class="btn-sm btn-info" onclick='openCandidatureModal(${JSON.stringify(d)})'>Examiner</button>`:''}</td></tr>`).join(''):`<tr><td colspan="6" class="empty-state"><div class="emoji">📭</div><p>Aucune candidature</p></td></tr>`;
+    }
+
+    // ── Appels d'offres ──
+    let filteredAO=[];
+    async function loadMesAO(){
+        const data=await api('GET','/api/v1/appels-offres/mes-appels');
+        allAO=Array.isArray(data)?data:[];filteredAO=[...allAO];renderAO(filteredAO);
+    }
+    function renderAO(list){
+        document.getElementById('aoTable').innerHTML=list.length?list.map(a=>`
+            <tr>
+                <td>${a.id}</td>
+                <td><strong>${a.titre}</strong></td>
+                <td>${badge(a.categorie)}</td>
+                <td>${fmt(a.dateCloture)}</td>
+                <td>${badge(a.status)}</td>
+                <td style="display:flex;gap:6px;flex-wrap:wrap;">
+                    ${a.status==='BROUILLON'?`<button class="btn-sm btn-info" onclick="editAO(${a.id})">✏️ Modifier</button><button class="btn-sm btn-success" onclick="publierAO(${a.id})">📢 Publier</button><button class="btn-sm btn-danger" onclick="deleteAO(${a.id})">🗑</button>`:''}
+                    ${a.status==='PUBLIE'?`<button class="btn-sm btn-warning" onclick="clorerAO(${a.id})">🔒 Clore</button><button class="btn-sm btn-info" onclick="voirCandidaturesAO(${a.id})">📥 Voir candidatures</button>`:''}
+                    ${a.status==='CLOS'?`<button class="btn-sm btn-info" onclick="voirCandidaturesAO(${a.id})">📥 Voir candidatures</button>`:''}
+                </td>
+            </tr>`).join(''):`<tr><td colspan="6" class="empty-state"><div class="emoji">📢</div><p>Aucun appel d'offre</p></td></tr>`;
+    }
+    function filterAO(q){filteredAO=allAO.filter(a=>a.titre.toLowerCase().includes(q.toLowerCase()));renderAO(filteredAO);}
+    function filterAOStatus(s){filteredAO=s?allAO.filter(a=>a.status===s):allAO;renderAO(filteredAO);}
+    async function publierAO(id){await api('PUT',`/api/v1/appels-offres/${id}/publier`);toast('Appel d\'offre publié !');loadMesAO();}
+    async function clorerAO(id){if(!confirm('Clore cet appel d\'offre ?'))return;await api('PUT',`/api/v1/appels-offres/${id}/clore`);toast('Appel d\'offre clos','info');loadMesAO();}
+    async function deleteAO(id){if(!confirm('Supprimer ce brouillon ?'))return;await api('DELETE',`/api/v1/appels-offres/${id}`);toast('Supprimé','info');loadMesAO();}
+    async function voirCandidaturesAO(aoId){showSection('candidatures',null);setTimeout(()=>{filterCandidaturesAO(aoId);},300);}
+    async function editAO(id){
+        const ao=allAO.find(a=>a.id===id);if(!ao)return;
+        document.getElementById('ao-edit-id').value=id;
+        document.getElementById('ao-titre').value=ao.titre;
+        document.getElementById('ao-description').value=ao.description;
+        document.getElementById('ao-categorie').value=ao.categorie;
+        document.getElementById('ao-budget').value=ao.budgetEstime||'';
+        document.getElementById('ao-cloture').value=ao.dateCloture?ao.dateCloture.substring(0,16):'';
+        document.getElementById('aoFormTitle').textContent='✏️ Modifier l\'appel d\'offre';
+        showSection('nouvel-ao',null);
+    }
+
+    // ── Save AO ──
+    // ── Toggle Autre AO field ──
+    function toggleAutreAO(){
+        const sel=document.getElementById('ao-categorie');
+        const container=document.getElementById('ao-categorie-autre');
+        const input=document.getElementById('ao-categorie-autre-text');
+        if(sel.value==='AUTRE'){container.style.display='block';input.required=true;input.focus();}
+        else{container.style.display='none';input.required=false;input.value='';}
+    }
+
+    async function saveAO(targetStatus){
+        const titre=document.getElementById('ao-titre').value.trim();
+        const description=document.getElementById('ao-description').value.trim();
+        const categorie=document.getElementById('ao-categorie').value;
+        const categorieAutreText=document.getElementById('ao-categorie-autre-text').value.trim();
+        const budget=document.getElementById('ao-budget').value;
+        const cloture=document.getElementById('ao-cloture').value;
+        const errEl=document.getElementById('ao-error');
+        if(!titre||!description||!categorie||!cloture){errEl.textContent='Veuillez remplir tous les champs obligatoires.';errEl.style.display='block';return;}
+        if(categorie==='AUTRE'&&!categorieAutreText){errEl.textContent="Veuillez préciser la catégorie dans le champ 'Autre'.";errEl.style.display='block';return;}
+        errEl.style.display='none';
+        const body={titre,description,categorie,budgetEstime:budget?parseFloat(budget):null,dateCloture:cloture};
+        const editId=document.getElementById('ao-edit-id').value;
+        try{
+            let saved;
+            if(editId){saved=await api('PUT',`/api/v1/appels-offres/${editId}`,body);}
+            else{saved=await api('POST','/api/v1/appels-offres',body);}
+            if(targetStatus==='PUBLIE'&&saved&&saved.id){await api('PUT',`/api/v1/appels-offres/${saved.id}/publier`);}
+            toast(targetStatus==='PUBLIE'?"Appel d'offre publié !":'Brouillon sauvegardé');
+            resetAOForm();
+            showSection('mes-appels',null);
+        }catch(e){errEl.textContent="Erreur lors de l'enregistrement.";errEl.style.display='block';}
+    }
+    function resetAOForm(){
+        document.getElementById('ao-edit-id').value='';
+        ['ao-titre','ao-description','ao-budget','ao-cloture','ao-categorie-autre-text'].forEach(id=>document.getElementById(id).value='');
+        document.getElementById('ao-categorie').value='';
+        document.getElementById('ao-categorie-autre').style.display='none';
+        document.getElementById('aoFormTitle').textContent='➕ Nouvel appel d\'offre';
+    }
+
+    // ── Candidatures ──
+    let allCand=[],filteredCand=[];let currentDemande=null;
+    async function loadCandidatures(){
+        const data=await api('GET','/api/v1/demandes');
+        allCand=Array.isArray(data)?data:[];filteredCand=[...allCand];renderCandidatures(filteredCand);
+        document.getElementById('cand-count').textContent=allCand.filter(d=>d.status==='SOUMISE').length;
+    }
+    function renderCandidatures(list){
+        document.getElementById('candidaturesTable').innerHTML=list.length?list.map(d=>`
+            <tr><td>${d.id}</td><td>${d.fournisseurUserId}</td><td>#${d.appelOffreId}</td><td>${fmtMoney(d.montantPropose)}</td><td>${fmt(d.dateSubmission||d.createdAt)}</td><td>${badge(d.status)}</td>
+            <td>${d.status==='SOUMISE'||d.status==='EN_EXAMEN'?`<button class="btn-sm btn-info" onclick='openCandidatureModal(${JSON.stringify(d).replace(/'/g,"\\'")} )'>Examiner</button>`:d.commentaireServiceAchat||'—'}</td></tr>`).join(''):`<tr><td colspan="7" class="empty-state"><div class="emoji">📥</div><p>Aucune candidature</p></td></tr>`;
+    }
+    function filterCandidatures(s){filteredCand=s?allCand.filter(d=>d.status===s):allCand;renderCandidatures(filteredCand);}
+    function filterCandidaturesAO(aoId){filteredCand=allCand.filter(d=>d.appelOffreId===aoId);renderCandidatures(filteredCand);}
+    function openCandidatureModal(d){
+        currentDemande=d;
+        document.getElementById('candidature-details').innerHTML=`
+            <div class="detail-row"><span class="detail-label">Fournisseur ID</span><span class="detail-value">${d.fournisseurUserId}</span></div>
+            <div class="detail-row"><span class="detail-label">Appel d'offre</span><span class="detail-value">#${d.appelOffreId}</span></div>
+            <div class="detail-row"><span class="detail-label">Montant proposé</span><span class="detail-value"><strong>${fmtMoney(d.montantPropose)}</strong></span></div>
+            <div class="detail-row"><span class="detail-label">Date soumission</span><span class="detail-value">${fmt(d.dateSubmission||d.createdAt)}</span></div>
+            <div class="detail-row"><span class="detail-label">Statut</span><span class="detail-value">${badge(d.status)}</span></div>
+            <div style="background:var(--beige);border-radius:10px;padding:14px;margin:16px 0;">
+                <div style="font-size:12px;font-weight:700;color:var(--text-mid);margin-bottom:8px;">PROPOSITION TECHNIQUE</div>
+                <div style="font-size:13px;color:var(--text-dark);line-height:1.6;">${d.propositionTechnique||'—'}</div>
+            </div>`;
+        document.getElementById('candidatureModal').classList.add('open');
+    }
+    async function submitDecision(decision){
+        if(!currentDemande)return;
+        const commentaire=document.getElementById('candidature-commentaire').value;
+        await api('PUT',`/api/v1/demandes/${currentDemande.id}/${decision==='ACCEPTEE'?'accepter':'rejeter'}`,{commentaire});
+        toast(decision==='ACCEPTEE'?'Candidature acceptée ✅':'Candidature rejetée','success');
+        closeModal('candidatureModal');document.getElementById('candidature-commentaire').value='';
+        loadCandidatures();
+    }
+
+    // ── Factures ──
+    let allFact=[],filteredFact=[];let currentFacture=null;
+    async function loadFactures(){
+        const data=await api('GET','/api/v1/factures');
+        allFact=Array.isArray(data)?data:[];filteredFact=[...allFact];renderFactures(filteredFact);
+        document.getElementById('fact-count').textContent=allFact.filter(f=>f.status==='EN_ATTENTE').length;
+    }
+    function renderFactures(list){
+        document.getElementById('facturesTable').innerHTML=list.length?list.map(f=>`
+            <tr><td>${f.id}</td><td>${f.referenceFacture}</td><td>${f.fournisseurUserId}</td><td>${fmtMoney(f.montant)}</td><td>${fmt(f.dateEmission)}</td><td>${fmt(f.dateEcheance)}</td><td>${badge(f.status)}</td>
+            <td style="display:flex;gap:6px;flex-wrap:wrap;">
+                ${f.status==='EN_ATTENTE'?`<button class="btn-sm btn-success" onclick='openFactureModal(${JSON.stringify(f)})'>Traiter</button>`:''}
+                ${f.status==='VALIDEE'?`<button class="btn-sm btn-info" onclick='marquerPayee(${f.id})'>💰 Payée</button>`:''}
+            </td></tr>`).join(''):`<tr><td colspan="8" class="empty-state"><div class="emoji">🧾</div><p>Aucune facture</p></td></tr>`;
+    }
+    function filterFactures(s){filteredFact=s?allFact.filter(f=>f.status===s):allFact;renderFactures(filteredFact);}
+    function openFactureModal(f){
+        currentFacture=f;
+        document.getElementById('facture-details').innerHTML=`
+            <div class="detail-row"><span class="detail-label">Référence</span><span class="detail-value"><strong>${f.referenceFacture}</strong></span></div>
+            <div class="detail-row"><span class="detail-label">Fournisseur ID</span><span class="detail-value">${f.fournisseurUserId}</span></div>
+            <div class="detail-row"><span class="detail-label">Montant</span><span class="detail-value"><strong>${fmtMoney(f.montant)}</strong></span></div>
+            <div class="detail-row"><span class="detail-label">Date émission</span><span class="detail-value">${fmt(f.dateEmission)}</span></div>
+            <div class="detail-row"><span class="detail-label">Date échéance</span><span class="detail-value">${fmt(f.dateEcheance)}</span></div>
+            <div class="detail-row"><span class="detail-label">Statut</span><span class="detail-value">${badge(f.status)}</span></div>`;
+        document.getElementById('btn-fact-valider').style.display=f.status==='EN_ATTENTE'?'':'none';
+        document.getElementById('btn-fact-rejeter').style.display=f.status==='EN_ATTENTE'?'':'none';
+        document.getElementById('btn-fact-payer').style.display=f.status==='VALIDEE'?'':'none';
+        document.getElementById('factureModal').classList.add('open');
+    }
+    async function submitFactureAction(action){
+        if(!currentFacture)return;
+        const commentaire=document.getElementById('facture-commentaire').value;
+        if(action==='valider')await api('PUT',`/api/v1/factures/${currentFacture.id}/valider`,{commentaire});
+        else if(action==='rejeter')await api('PUT',`/api/v1/factures/${currentFacture.id}/rejeter`,{commentaire});
+        else if(action==='payer')await api('PUT',`/api/v1/factures/${currentFacture.id}/marquer-payee`);
+        toast('Facture mise à jour');closeModal('factureModal');loadFactures();
+    }
+    async function marquerPayee(id){await api('PUT',`/api/v1/factures/${id}/marquer-payee`);toast('Facture marquée payée 💰');loadFactures();}
+
+    function logout(){ fetch('/api/v1/auth/logout',{method:'POST',headers:{'Authorization':'Bearer '+token}}); sessionStorage.clear(); window.location.href='/index.html'; }
+
+    // ── Export CSV / PDF / Impression ──
+    function exportExcel(tbodyId, filename) {
+        const tbody = document.getElementById(tbodyId); if (!tbody) return;
+        const table = tbody.closest('table');
+        const allThs = [...table.querySelectorAll('thead th')];
+        const validCols = allThs.map((th,i)=>({i,label:th.textContent.trim()})).filter(c=>c.label!=='Actions');
+        const lines = [validCols.map(c=>'"'+c.label+'"').join(';')];
+        tbody.querySelectorAll('tr').forEach(tr=>{
+            const tds=tr.querySelectorAll('td'); if(!tds.length) return;
+            lines.push(validCols.map(c=>'"'+(tds[c.i]?.innerText?.trim().replace(/"/g,'""')||'')+'"').join(';'));
+        });
+        const csv='\uFEFF'+lines.join('\r\n');
+        const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement('a'); a.href=url; a.download=filename+'_'+new Date().toISOString().slice(0,10)+'.csv';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+    }
+    function exportPDF(tbodyId, title, heading) {
+        const tbody=document.getElementById(tbodyId); if(!tbody) return;
+        const table=tbody.closest('table');
+        const allThs=[...table.querySelectorAll('thead th')];
+        const validCols=allThs.map((th,i)=>({i,label:th.textContent.trim()})).filter(c=>c.label!=='Actions');
+        let html='<table><thead><tr>'; validCols.forEach(c=>html+=`<th>${c.label}</th>`); html+='</tr></thead><tbody>';
+        tbody.querySelectorAll('tr').forEach(tr=>{
+            const tds=tr.querySelectorAll('td'); if(!tds.length) return;
+            html+='<tr>'+validCols.map(c=>`<td>${tds[c.i]?.innerText?.trim()||''}</td>`).join('')+'</tr>';
+        }); html+='</tbody></table>';
+        const w=window.open('','_blank','width=1000,height=700');
+        w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${title}</title>
+        <style>body{font-family:Arial,sans-serif;font-size:11px;padding:20px;}
+        .hdr{display:flex;justify-content:space-between;border-bottom:3px solid #ea580c;padding-bottom:10px;margin-bottom:16px;}
+        h2{color:#ea580c;margin:0;}.badge{background:linear-gradient(135deg,#f97316,#ea580c);color:white;width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;}
+        table{width:100%;border-collapse:collapse;}th{background:#fff7ed;color:#9a3412;padding:8px;border:1px solid #e7d5bf;font-size:10px;text-transform:uppercase;text-align:left;}
+        td{padding:7px 8px;border:1px solid #e7d5bf;}tr:nth-child(even) td{background:#fef9f4;}
+        .np{text-align:center;margin-top:20px;}@media print{.np{display:none!important}}</style></head><body>
+        <div class="hdr"><div><h2>${heading||title}</h2><small>Portail Service Achat ONEE — ${new Date().toLocaleDateString('fr-FR')}</small></div><div class="badge">ON</div></div>
+        ${html}<div class="np"><button onclick="window.print()" style="padding:9px 24px;background:#ea580c;color:white;border:none;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;">📄 Enregistrer en PDF</button>
+        <p style="font-size:11px;color:#a8a29e;margin-top:6px;">Imprimante → <b>Enregistrer en PDF</b></p></div></body></html>`);
+        w.document.close(); setTimeout(()=>{w.focus();w.print();},600);
+    }
+    function printTable(tbodyId, title) {
+        const tbody=document.getElementById(tbodyId); if(!tbody) return;
+        const table=tbody.closest('table');
+        const clone=table.cloneNode(true);
+        clone.querySelectorAll('th,td').forEach(c=>{ if(c.textContent.trim()==='Actions'||c.querySelector('button')) c.remove(); });
+        const w=window.open('','_blank','width=900,height=700');
+        w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${title}</title>
+        <style>body{font-family:Arial;font-size:12px;padding:20px;}h2{color:#ea580c;border-bottom:2px solid #ea580c;padding-bottom:8px;}
+        table{width:100%;border-collapse:collapse;}th{background:#fff7ed;color:#9a3412;padding:8px;border:1px solid #e7d5bf;font-size:11px;text-transform:uppercase;}
+        td{padding:7px 8px;border:1px solid #e7d5bf;}@media print{button{display:none!important}}</style></head><body>
+        <h2>${title}</h2><small>Portail Service Achat ONEE — ${new Date().toLocaleDateString('fr-FR')}</small><br><br>
+        ${clone.outerHTML}</body></html>`);
+        w.document.close(); setTimeout(()=>w.focus(),300);
+    }
+
+    loadDashboard();
+</script>
+</body>
+</html>
+

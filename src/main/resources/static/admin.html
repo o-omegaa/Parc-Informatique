@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration — Portail Fournisseur ONEE</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --orange:       #f97316;
+            --orange-dark:  #ea580c;
+            --orange-light: #fed7aa;
+            --orange-xlight:#fff7ed;
+            --beige:        #fef3e2;
+            --beige-dark:   #fde8c4;
+            --brown:        #9a3412;
+            --brown-light:  #c2410c;
+            --text-dark:    #1c1917;
+            --text-mid:     #57534e;
+            --text-light:   #a8a29e;
+            --white:        #ffffff;
+            --border:       #e7d5bf;
+            --sidebar-w:    240px;
+            --success:      #16a34a;
+            --danger:       #dc2626;
+            --info:         #2563eb;
+            --warning:      #d97706;
+        }
+        *{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif;}
+        body{background:var(--beige);color:var(--text-dark);display:flex;min-height:100vh;}
+
+        /* ── Sidebar ── */
+        .sidebar{width:var(--sidebar-w);background:var(--white);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:100;box-shadow:2px 0 12px rgba(0,0,0,0.06);}
+        .sidebar-logo{padding:24px 20px 20px;border-bottom:1px solid var(--border);}
+        .sidebar-logo .logo-badge{background:linear-gradient(135deg,var(--orange),var(--orange-dark));color:white;width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;margin-bottom:10px;overflow:hidden;padding:0;}
+        .sidebar-logo .logo-badge img{width:100%;height:100%;object-fit:cover;border-radius:10px;}
+        .sidebar-logo h2{font-size:14px;font-weight:700;color:var(--brown);line-height:1.3;}
+        .sidebar-logo span{font-size:11px;color:var(--text-light);font-weight:500;}
+        .btn-sm{padding:7px 13px;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;transition:opacity 0.15s;}
+        .btn-sm:hover{opacity:0.85;}
+        .btn-info{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;}
+        .sidebar-nav{flex:1;padding:16px 12px;overflow-y:auto;}
+        .nav-section-title{font-size:10px;font-weight:700;color:var(--text-light);text-transform:uppercase;letter-spacing:1px;padding:0 8px;margin:12px 0 6px;}
+        .nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;cursor:pointer;font-size:13px;font-weight:500;color:var(--text-mid);transition:all 0.15s;margin-bottom:2px;border:none;background:none;width:100%;text-align:left;}
+        .nav-item:hover{background:var(--orange-xlight);color:var(--orange-dark);}
+        .nav-item.active{background:linear-gradient(135deg,var(--orange),var(--orange-dark));color:white;font-weight:600;box-shadow:0 4px 12px rgba(249,115,22,0.3);}
+        .nav-item .icon{font-size:16px;width:20px;text-align:center;}
+        .badge-pill{margin-left:auto;background:var(--danger);color:white;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;}
+        .sidebar-footer{padding:16px;border-top:1px solid var(--border);}
+        .user-card{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+        .user-avatar{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--orange),var(--orange-dark));display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:14px;flex-shrink:0;}
+        .user-info p{font-size:13px;font-weight:600;color:var(--text-dark);}
+        .user-info span{font-size:11px;color:var(--text-light);}
+        .btn-logout{width:100%;padding:9px;border:1.5px solid var(--border);border-radius:10px;background:none;font-size:13px;font-weight:600;color:var(--text-mid);cursor:pointer;transition:all 0.15s;}
+        .btn-logout:hover{background:var(--orange-xlight);border-color:var(--orange-light);color:var(--orange-dark);}
+
+        /* ── Main ── */
+        .main{margin-left:var(--sidebar-w);flex:1;min-height:100vh;display:flex;flex-direction:column;}
+        .topbar{background:var(--white);border-bottom:1px solid var(--border);padding:16px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;}
+        .topbar h1{font-size:18px;font-weight:700;color:var(--brown);}
+        .topbar-right{display:flex;align-items:center;gap:12px;}
+        .content{padding:28px;flex:1;}
+
+        /* ── Sections ── */
+        .section{display:none;animation:fadeIn 0.3s ease;}
+        .section.active{display:block;}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+        /* ── Stats grid ── */
+        .stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;margin-bottom:28px;}
+        .stat-card{background:var(--white);border-radius:16px;padding:20px;border:1px solid var(--border);transition:box-shadow 0.2s;}
+        .stat-card:hover{box-shadow:0 6px 20px rgba(0,0,0,0.08);}
+        .stat-icon{font-size:24px;margin-bottom:12px;}
+        .stat-value{font-size:28px;font-weight:800;color:var(--brown);line-height:1;}
+        .stat-label{font-size:12px;color:var(--text-light);font-weight:500;margin-top:4px;}
+        .stat-card.highlight{background:linear-gradient(135deg,var(--orange),var(--orange-dark));border:none;}
+        .stat-card.highlight .stat-value,.stat-card.highlight .stat-label{color:white;}
+
+        /* ── Cards ── */
+        .card{background:var(--white);border-radius:16px;border:1px solid var(--border);overflow:hidden;}
+        .card-header{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+        .card-header h3{font-size:15px;font-weight:700;color:var(--text-dark);}
+        .card-body{padding:0;}
+
+        /* ── Tables ── */
+        .table-wrap{overflow-x:auto;}
+        table{width:100%;border-collapse:collapse;}
+        th{background:var(--beige);padding:11px 16px;text-align:left;font-size:11px;font-weight:700;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;}
+        td{padding:12px 16px;font-size:13px;color:var(--text-dark);border-top:1px solid var(--border);}
+        tr:hover td{background:var(--orange-xlight);}
+        .empty-state{text-align:center;padding:48px 24px;color:var(--text-light);}
+        .empty-state .emoji{font-size:40px;margin-bottom:12px;}
+        .empty-state p{font-size:14px;}
+
+        /* ── Badges ── */
+        .badge{display:inline-flex;align-items:center;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+        .badge-active,.badge-ACTIVE{background:rgba(22,163,74,0.12);color:var(--success);}
+        .badge-locked,.badge-LOCKED{background:rgba(220,38,38,0.12);color:var(--danger);}
+        .badge-disabled,.badge-DISABLED{background:rgba(217,119,6,0.12);color:var(--warning);}
+        .badge-ADMIN{background:rgba(234,88,12,0.12);color:var(--orange-dark);}
+        .badge-SUPPLIER{background:rgba(37,99,235,0.12);color:var(--info);}
+        .badge-SERVICE_ACHAT{background:rgba(22,163,74,0.12);color:var(--success);}
+        .badge-PUBLIE{background:rgba(22,163,74,0.12);color:var(--success);}
+        .badge-BROUILLON{background:rgba(168,162,158,0.15);color:var(--text-mid);}
+        .badge-CLOS{background:rgba(37,99,235,0.12);color:var(--info);}
+        .badge-ANNULE{background:rgba(220,38,38,0.12);color:var(--danger);}
+        .badge-SOUMISE{background:rgba(37,99,235,0.12);color:var(--info);}
+        .badge-EN_EXAMEN{background:rgba(217,119,6,0.12);color:var(--warning);}
+        .badge-ACCEPTEE{background:rgba(22,163,74,0.12);color:var(--success);}
+        .badge-REJETEE{background:rgba(220,38,38,0.12);color:var(--danger);}
+        .badge-EN_ATTENTE{background:rgba(217,119,6,0.12);color:var(--warning);}
+        .badge-VALIDEE{background:rgba(37,99,235,0.12);color:var(--info);}
+        .badge-PAYEE{background:rgba(22,163,74,0.12);color:var(--success);}
+
+        /* ── Action buttons ── */
+        .btn-sm{padding:5px 12px;border-radius:8px;font-size:12px;font-weight:600;border:none;cursor:pointer;transition:all 0.15s;}
+        .btn-success{background:rgba(22,163,74,0.1);color:var(--success);border:1px solid rgba(22,163,74,0.25);}
+        .btn-success:hover{background:var(--success);color:white;}
+        .btn-danger{background:rgba(220,38,38,0.1);color:var(--danger);border:1px solid rgba(220,38,38,0.25);}
+        .btn-danger:hover{background:var(--danger);color:white;}
+        .btn-warning{background:rgba(217,119,6,0.1);color:var(--warning);border:1px solid rgba(217,119,6,0.25);}
+        .btn-warning:hover{background:var(--warning);color:white;}
+        .btn-info{background:rgba(37,99,235,0.1);color:var(--info);border:1px solid rgba(37,99,235,0.25);}
+        .btn-info:hover{background:var(--info);color:white;}
+        .btn-primary{background:linear-gradient(135deg,var(--orange),var(--orange-dark));color:white;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;border:none;cursor:pointer;transition:box-shadow 0.15s;}
+        .btn-primary:hover{box-shadow:0 6px 18px rgba(249,115,22,0.35);}
+
+        /* ── Search & filter ── */
+        .toolbar{display:flex;align-items:center;gap:12px;padding:16px 22px;border-bottom:1px solid var(--border);}
+        .search-input{flex:1;padding:9px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none;background:var(--beige);}
+        .search-input:focus{border-color:var(--orange);}
+        select.filter-select{padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none;background:var(--beige);color:var(--text-dark);}
+        select.filter-select:focus{border-color:var(--orange);}
+
+        /* ── Modal ── */
+        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.35);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+        .modal-overlay.open{opacity:1;pointer-events:all;}
+        .modal-box{background:var(--white);border-radius:20px;padding:32px;width:90%;max-width:480px;box-shadow:0 24px 60px rgba(0,0,0,0.15);transform:translateY(10px);transition:transform 0.25s;}
+        .modal-overlay.open .modal-box{transform:translateY(0);}
+        .modal-title{font-size:18px;font-weight:800;color:var(--brown);margin-bottom:20px;}
+        .field-group{margin-bottom:16px;}
+        .field-group label{display:block;font-size:13px;font-weight:600;color:var(--text-dark);margin-bottom:6px;}
+        .field-group input,.field-group select{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;outline:none;background:var(--white);}
+        .field-group input:focus,.field-group select:focus{border-color:var(--orange);}
+        .modal-footer{display:flex;gap:12px;margin-top:24px;}
+        .btn-cancel{flex:1;padding:11px;border:1.5px solid var(--border);border-radius:10px;background:none;font-size:13px;font-weight:600;color:var(--text-mid);cursor:pointer;}
+        .btn-cancel:hover{background:var(--beige);}
+        .btn-confirm{flex:1;padding:11px;background:linear-gradient(135deg,var(--orange),var(--orange-dark));color:white;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;}
+
+        /* ── Toast ── */
+        .toast{position:fixed;bottom:24px;right:24px;padding:13px 22px;border-radius:12px;color:white;font-weight:600;font-size:13px;z-index:9999;animation:fadeIn 0.3s ease;box-shadow:0 8px 24px rgba(0,0,0,0.15);}
+        .toast-success{background:linear-gradient(135deg,#16a34a,#15803d);}
+        .toast-error{background:linear-gradient(135deg,#dc2626,#b91c1c);}
+        .toast-info{background:linear-gradient(135deg,var(--orange),var(--orange-dark));}
+    </style>
+</head>
+<body>
+
+<!-- ═══════════════ SIDEBAR ═══════════════ -->
+<aside class="sidebar">
+    <div class="sidebar-logo">
+        <div class="logo-badge"><img src="/images/login_illustration.jpg" alt="Logo"></div>
+        <span>Portail Administration</span>
+    </div>
+    <nav class="sidebar-nav">
+        <div class="nav-section-title">Vue d'ensemble</div>
+        <button class="nav-item active" onclick="showSection('dashboard',this)">
+            <span class="icon">🏠</span> Tableau de bord
+        </button>
+
+        <div class="nav-section-title">Gestion</div>
+        <button class="nav-item" onclick="showSection('users',this)">
+            <span class="icon">👥</span> Utilisateurs
+        </button>
+        <button class="nav-item" id="nav-pending" onclick="showSection('pending',this)">
+            <span class="icon">⏳</span> Validations en attente
+            <span class="badge-pill" id="pending-count">0</span>
+        </button>
+
+        <div class="nav-section-title">Données</div>
+        <button class="nav-item" onclick="showSection('appels',this)">
+            <span class="icon">📋</span> Appels d'offres
+        </button>
+        <button class="nav-item" onclick="showSection('demandes',this)">
+            <span class="icon">📝</span> Candidatures
+        </button>
+        <button class="nav-item" onclick="showSection('factures',this)">
+            <span class="icon">🧾</span> Factures
+        </button>
+
+        <div class="nav-section-title">Sécurité</div>
+        <button class="nav-item" onclick="showSection('audit',this)">
+            <span class="icon">🛡️</span> Journal d'audit
+        </button>
+    </nav>
+    <div class="sidebar-footer">
+        <div class="user-card">
+            <div class="user-avatar" id="avatarInitial"><span id="adminAvatarLetter">A</span></div>
+            <div class="user-info">
+                <p id="sidebarUsername">Admin</p>
+                <span>Administrateur</span>
+            </div>
+        </div>
+        <button class="btn-logout" onclick="logout()">🚪 Se déconnecter</button>
+    </div>
+</aside>
+
+<!-- ═══════════════ MAIN ═══════════════ -->
+<main class="main">
+    <div class="topbar">
+        <h1 id="topbarTitle">Tableau de bord</h1>
+        <div class="topbar-right">
+            <button class="btn-primary" onclick="openCreateUserModal()">+ Nouvel utilisateur</button>
+        </div>
+    </div>
+
+    <div class="content">
+
+        <!-- ── Dashboard ── -->
+        <div class="section active" id="section-dashboard">
+            <div class="stats-grid" id="statsGrid">
+                <div class="stat-card highlight"><div class="stat-icon">👥</div><div class="stat-value" id="s-users">—</div><div class="stat-label">Utilisateurs</div></div>
+                <div class="stat-card"><div class="stat-icon">🏭</div><div class="stat-value" id="s-fournisseurs">—</div><div class="stat-label">Fournisseurs actifs</div></div>
+                <div class="stat-card"><div class="stat-icon">⏳</div><div class="stat-value" id="s-pending">—</div><div class="stat-label">En attente validation</div></div>
+                <div class="stat-card"><div class="stat-icon">📋</div><div class="stat-value" id="s-appels">—</div><div class="stat-label">Appels d'offres</div></div>
+                <div class="stat-card"><div class="stat-icon">📝</div><div class="stat-value" id="s-demandes">—</div><div class="stat-label">Candidatures</div></div>
+                <div class="stat-card"><div class="stat-icon">🧾</div><div class="stat-value" id="s-factures">—</div><div class="stat-label">Factures en attente</div></div>
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h3>🕐 Activité récente — Dernières candidatures</h3>
+                    <div style="display:flex;gap:8px;">
+                        <button class="btn-sm btn-info" onclick="exportExcel('recentDemandes','Candidatures_recentes')">📊 Excel</button>
+                        <button class="btn-sm btn-info" onclick="exportPDF('recentDemandes','Candidatures récentes','🕐 Dernières candidatures')">📄 PDF</button>
+                        <button class="btn-sm" style="background:rgba(28,25,23,0.08);color:var(--text-dark);border:1px solid var(--border);" onclick="printTable('recentDemandes','Candidatures récentes')">🖨️ Imprimer</button>
+                    </div>
+                </div>
+                <div class="card-body table-wrap"><table><thead><tr><th>Fournisseur</th><th>Appel d'offre ID</th><th>Montant proposé</th><th>Date</th><th>Statut</th></tr></thead><tbody id="recentDemandes"><tr><td colspan="5" class="empty-state"><div class="emoji">📊</div><p>Chargement...</p></td></tr></tbody></table></div>
+            </div>
+        </div>
+
+        <!-- ── Users ── -->
+        <div class="section" id="section-users">
+            <div class="card">
+                <div class="card-header">
+                    <h3>👥 Tous les utilisateurs</h3>
+                    <div style="display:flex;gap:8px;">
+                        <button class="btn-sm btn-info" onclick="exportExcel('usersTable','Utilisateurs')">📊 Excel</button>
+                        <button class="btn-sm btn-info" onclick="exportPDF('usersTable','Utilisateurs','👥 Utilisateurs')">📄 PDF</button>
+                        <button class="btn-sm" style="background:rgba(28,25,23,0.08);color:var(--text-dark);border:1px solid var(--border);" onclick="printTable('usersTable','Utilisateurs')">🖨️ Imprimer</button>
+                    </div>
+                </div>
+                <div class="toolbar">
+                    <input class="search-input" type="text" placeholder="🔍 Rechercher un utilisateur..." oninput="filterUsers(this.value)">
+                    <select class="filter-select" onchange="filterUsersByRole(this.value)">
+                        <option value="">Tous les rôles</option>
+                        <option value="ADMIN">Admin</option>
+                        <option value="SERVICE_ACHAT">Service Achat</option>
+                        <option value="SUPPLIER">Fournisseur</option>
+                    </select>
+                </div>
+                <div class="card-body table-wrap"><table><thead><tr><th>ID</th><th>Utilisateur</th><th>Email</th><th>Rôle</th><th>Statut</th><th>Actions</th></tr></thead><tbody id="usersTable"></tbody></table></div>
+            </div>
+        </div>
+
+        <!-- ── Pending Validations ── -->
+        <div class="section" id="section-pending">
+            <div class="card">
+                <div class="card-header">
+                    <h3>⏳ Fournisseurs en attente de validation</h3>
+                    <div style="display:flex;gap:8px;align-items:center;">
+                        <span style="font-size:12px;color:var(--text-light)">Comptes créés, non encore activés</span>
+                        <button class="btn-sm btn-info" onclick="exportExcel('pendingTable','En_attente')">📊 Excel</button>
+                        <button class="btn-sm btn-info" onclick="exportPDF('pendingTable','En attente','⏳ En attente')">📄 PDF</button>
+                        <button class="btn-sm" style="background:rgba(28,25,23,0.08);color:var(--text-dark);border:1px solid var(--border);" onclick="printTable('pendingTable','En attente validation')">🖨️ Imprimer</button>
+                    </div>
+                </div>
+                <div class="card-body table-wrap"><table><thead><tr><th>ID</th><th>Utilisateur</th><th>Email</th><th>Date inscription</th><th>Actions</th></tr></thead><tbody id="pendingTable"></tbody></table></div>
+            </div>
+        </div>
+
+        <!-- ── Appels d'offres ── -->
+        <div class="section" id="section-appels">
+            <div class="card">
+                <div class="card-header">
+                    <h3>📋 Tous les appels d'offres</h3>
+                    <div style="display:flex;gap:8px;">
+                        <button class="btn-sm btn-info" onclick="exportExcel('appelsTable','Appels_offres')">📊 Excel</button>
+                        <button class="btn-sm btn-info" onclick="exportPDF('appelsTable','Appels d offres','📋 Appels d offres')">📄 PDF</button>
+                        <button class="btn-sm" style="background:rgba(28,25,23,0.08);color:var(--text-dark);border:1px solid var(--border);" onclick="printTable('appelsTable','Appels d offres')">🖨️ Imprimer</button>
+                    </div>
+                </div>
+                <div class="card-body table-wrap"><table><thead><tr><th>ID</th><th>Titre</th><th>Catégorie</th><th>Date clôture</th><th>Statut</th><th>Publié par</th></tr></thead><tbody id="appelsTable"></tbody></table></div>
+            </div>
+        </div>
+
+        <!-- ── Demandes ── -->
+        <div class="section" id="section-demandes">
+            <div class="card">
+                <div class="card-header">
+                    <h3>📝 Toutes les candidatures</h3>
+                    <div style="display:flex;gap:8px;">
+                        <button class="btn-sm btn-info" onclick="exportExcel('demandesTable','Candidatures')">📊 Excel</button>
+                        <button class="btn-sm btn-info" onclick="exportPDF('demandesTable','Candidatures','📝 Candidatures')">📄 PDF</button>
+                        <button class="btn-sm" style="background:rgba(28,25,23,0.08);color:var(--text-dark);border:1px solid var(--border);" onclick="printTable('demandesTable','Candidatures')">🖨️ Imprimer</button>
+                    </div>
+                </div>
+                <div class="card-body table-wrap"><table><thead><tr><th>ID</th><th>Fournisseur</th><th>Appel d'offre</th><th>Montant</th><th>Date</th><th>Statut</th></tr></thead><tbody id="demandesTable"></tbody></table></div>
+            </div>
+        </div>
+
+        <!-- ── Factures ── -->
+        <div class="section" id="section-factures">
+            <div class="card">
+                <div class="card-header">
+                    <h3>🧾 Toutes les factures</h3>
+                    <div style="display:flex;gap:8px;">
+                        <button class="btn-sm btn-info" onclick="exportExcel('facturesTable','Factures')">📊 Excel</button>
+                        <button class="btn-sm btn-info" onclick="exportPDF('facturesTable','Factures','🧾 Factures')">📄 PDF</button>
+                        <button class="btn-sm" style="background:rgba(28,25,23,0.08);color:var(--text-dark);border:1px solid var(--border);" onclick="printTable('facturesTable','Factures')">🖨️ Imprimer</button>
+                    </div>
+                </div>
+                <div class="card-body table-wrap"><table><thead><tr><th>ID</th><th>Référence</th><th>Fournisseur</th><th>Montant</th><th>Échéance</th><th>Statut</th></tr></thead><tbody id="facturesTable"></tbody></table></div>
+            </div>
+        </div>
+
+        <!-- ── Audit ── -->
+        <div class="section" id="section-audit">
+            <div class="card">
+                <div class="card-header">
+                    <h3>🛡️ Journal d'audit (DGSSI 7.1.3)</h3>
+                    <div style="display:flex;gap:8px;">
+                        <button class="btn-sm btn-info" onclick="exportExcel('auditTable','Journal_audit')">📊 Excel</button>
+                        <button class="btn-sm btn-info" onclick="exportPDF('auditTable','Journal audit','🛡️ Journal audit')">📄 PDF</button>
+                        <button class="btn-sm" style="background:rgba(28,25,23,0.08);color:var(--text-dark);border:1px solid var(--border);" onclick="printTable('auditTable','Journal d audit')">🖨️ Imprimer</button>
+                    </div>
+                </div>
+                <div class="card-body table-wrap"><table><thead><tr><th>Timestamp</th><th>Acteur</th><th>Action</th><th>Entité</th><th>Résultat</th></tr></thead><tbody id="auditTable"></tbody></table></div>
+            </div>
+        </div>
+
+    </div><!-- /content -->
+</main>
+
+<!-- ═══════ MODAL: Créer utilisateur ═══════ -->
+<div class="modal-overlay" id="createUserModal">
+    <div class="modal-box">
+        <div class="modal-title">+ Créer un utilisateur</div>
+        <div class="field-group"><label>Nom d'utilisateur *</label><input type="text" id="cu-username" placeholder="identifiant"></div>
+        <div class="field-group"><label>Adresse e-mail *</label><input type="email" id="cu-email" placeholder="email@onee.ma"></div>
+        <div class="field-group"><label>Mot de passe * (min. 12 car.)</label><input type="password" id="cu-password" placeholder="••••••••••••" minlength="12"></div>
+        <div class="field-group"><label>Rôle *</label>
+            <select id="cu-role">
+                <option value="SERVICE_ACHAT">Service Achat</option>
+                <option value="ADMIN">Administrateur</option>
+            </select>
+        </div>
+        <div id="cu-error" style="color:var(--danger);font-size:13px;display:none;"></div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal('createUserModal')">Annuler</button>
+            <button class="btn-confirm" onclick="createUser()">Créer</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ── Auth guard ──
+    const token = sessionStorage.getItem('token');
+    const role  = sessionStorage.getItem('role');
+    if (!token || role !== 'ADMIN') { window.location.href = '/index.html'; }
+
+    document.getElementById('sidebarUsername').textContent = sessionStorage.getItem('username') || 'Admin';
+    document.getElementById('adminAvatarLetter').textContent = (sessionStorage.getItem('username') || 'A')[0].toUpperCase();
+
+    // ── API helper ──
+    async function api(method, url, body=null) {
+        const opts = { method, headers: { 'Authorization':'Bearer '+token, 'Content-Type':'application/json' } };
+        if (body) opts.body = JSON.stringify(body);
+        const res = await fetch(url, opts);
+        if (res.status === 401) { sessionStorage.clear(); window.location.href='/index.html'; }
+        if (res.status === 204) return null;
+        return res.json();
+    }
+
+    function fmt(d){ return d ? new Date(d).toLocaleDateString('fr-FR',{year:'numeric',month:'short',day:'numeric'}) : '—'; }
+    function fmtMoney(n){ return n ? new Intl.NumberFormat('fr-MA',{style:'currency',currency:'MAD'}).format(n) : '—'; }
+    function badge(s){ return `<span class="badge badge-${s}">${lbl(s)}</span>`; }
+    const LABELS = { ACTIVE:'Actif',LOCKED:'Bloqué',DISABLED:'En attente',ADMIN:'Admin',SUPPLIER:'Fournisseur',SERVICE_ACHAT:'Serv. Achat',BROUILLON:'Brouillon',PUBLIE:'Publié',CLOS:'Clos',ANNULE:'Annulé',SOUMISE:'Soumise',EN_EXAMEN:'En examen',ACCEPTEE:'Acceptée',REJETEE:'Rejetée',EN_ATTENTE:'En attente',VALIDEE:'Validée',PAYEE:'Payée',REJETEE:'Rejetée' };
+    function lbl(s){ return LABELS[s]||s; }
+
+    function toast(msg, type='success'){
+        const t=document.createElement('div'); t.className=`toast toast-${type}`; t.textContent=msg;
+        document.body.appendChild(t); setTimeout(()=>t.remove(),3500);
+    }
+
+    // ── Navigation ──
+    let allUsers=[]; let filteredUsers=[];
+    function showSection(id, btn) {
+        document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+        document.getElementById('section-'+id).classList.add('active');
+        btn.classList.add('active');
+        const titles={dashboard:'Tableau de bord',users:'Utilisateurs',pending:'Validations en attente',appels:"Appels d'offres",demandes:'Candidatures',factures:'Factures',audit:"Journal d'audit"};
+        document.getElementById('topbarTitle').textContent=titles[id]||id;
+        loadSection(id);
+    }
+
+    function loadSection(id){
+        if(id==='dashboard') loadDashboard();
+        else if(id==='users') loadUsers();
+        else if(id==='pending') loadPending();
+        else if(id==='appels') loadAppels();
+        else if(id==='demandes') loadDemandes();
+        else if(id==='factures') loadFactures();
+        else if(id==='audit') loadAudit();
+    }
+
+    // ── Dashboard ──
+    async function loadDashboard(){
+        try{
+            const [users,appels,demandes,factures]=await Promise.all([
+                api('GET','/api/v1/users'),
+                api('GET','/api/v1/appels-offres'),
+                api('GET','/api/v1/demandes'),
+                api('GET','/api/v1/factures')
+            ]);
+            const us=Array.isArray(users)?users:[];
+            const ao=Array.isArray(appels)?appels:[];
+            const dm=Array.isArray(demandes)?demandes:[];
+            const fa=Array.isArray(factures)?factures:[];
+            document.getElementById('s-users').textContent=us.length;
+            document.getElementById('s-fournisseurs').textContent=us.filter(u=>u.role==='SUPPLIER'&&u.status==='ACTIVE').length;
+            const pend=us.filter(u=>u.role==='SUPPLIER'&&u.status==='DISABLED').length;
+            document.getElementById('s-pending').textContent=pend;
+            document.getElementById('pending-count').textContent=pend;
+            document.getElementById('s-appels').textContent=ao.length;
+            document.getElementById('s-demandes').textContent=dm.length;
+            document.getElementById('s-factures').textContent=fa.filter(f=>f.status==='EN_ATTENTE').length;
+            // Recent demandes
+            const tbody=document.getElementById('recentDemandes');
+            const recent=dm.slice(-10).reverse();
+            tbody.innerHTML=recent.length?recent.map(d=>`<tr><td>${d.fournisseurUserId}</td><td>#${d.appelOffreId}</td><td>${fmtMoney(d.montantPropose)}</td><td>${fmt(d.dateSubmission||d.createdAt)}</td><td>${badge(d.status)}</td></tr>`).join(''):`<tr><td colspan="5" class="empty-state"><div class="emoji">📭</div><p>Aucune candidature</p></td></tr>`;
+        }catch(e){ console.error(e); }
+    }
+
+    // ── Users ──
+    async function loadUsers(){
+        const data=await api('GET','/api/v1/users');
+        allUsers=Array.isArray(data)?data:[];
+        filteredUsers=[...allUsers];
+        renderUsers(filteredUsers);
+    }
+    function renderUsers(list){
+        const tbody=document.getElementById('usersTable');
+        tbody.innerHTML=list.length?list.map(u=>`
+            <tr>
+                <td>${u.id}</td>
+                <td><strong>${u.username}</strong></td>
+                <td>${u.email}</td>
+                <td>${badge(u.role)}</td>
+                <td>${badge(u.status)}</td>
+                <td style="display:flex;gap:6px;flex-wrap:wrap;">
+                    ${u.status!=='ACTIVE'?`<button class="btn-sm btn-success" onclick="activateUser(${u.id})">✅ Activer</button>`:''}
+                    ${u.status!=='LOCKED'?`<button class="btn-sm btn-warning" onclick="lockUser(${u.id})">🔒 Bloquer</button>`:''}
+                    ${u.status!=='DISABLED'&&u.role!=='ADMIN'?`<button class="btn-sm btn-danger" onclick="disableUser(${u.id})">🚫 Désactiver</button>`:''}
+                </td>
+            </tr>`).join(''):`<tr><td colspan="6" class="empty-state"><div class="emoji">👤</div><p>Aucun utilisateur</p></td></tr>`;
+    }
+    function filterUsers(q){ filteredUsers=allUsers.filter(u=>u.username.toLowerCase().includes(q.toLowerCase())||u.email.toLowerCase().includes(q.toLowerCase())); renderUsers(filteredUsers); }
+    function filterUsersByRole(r){ filteredUsers=r?allUsers.filter(u=>u.role===r):allUsers; renderUsers(filteredUsers); }
+
+    async function activateUser(id){ await api('POST',`/api/v1/users/${id}/activate`); toast('Compte activé avec succès'); loadUsers(); loadDashboard(); }
+    async function lockUser(id){ await api('POST',`/api/v1/users/${id}/lock`); toast('Compte bloqué','info'); loadUsers(); }
+    async function disableUser(id){ await api('POST',`/api/v1/users/${id}/deactivate`); toast('Compte désactivé','info'); loadUsers(); }
+
+    // ── Pending validations ──
+    async function loadPending(){
+        const data=await api('GET','/api/v1/users');
+        const pending=(Array.isArray(data)?data:[]).filter(u=>u.role==='SUPPLIER'&&u.status==='DISABLED');
+        document.getElementById('pending-count').textContent=pending.length;
+        const tbody=document.getElementById('pendingTable');
+        tbody.innerHTML=pending.length?pending.map(u=>`
+            <tr>
+                <td>${u.id}</td>
+                <td><strong>${u.username}</strong></td>
+                <td>${u.email}</td>
+                <td>${fmt(u.createdAt)}</td>
+                <td style="display:flex;gap:6px;">
+                    <button class="btn-sm btn-success" onclick="activateUser(${u.id});loadPending()">✅ Valider</button>
+                    <button class="btn-sm btn-danger" onclick="disableUser(${u.id})">❌ Rejeter</button>
+                </td>
+            </tr>`).join(''):`<tr><td colspan="5" class="empty-state"><div class="emoji">🎉</div><p>Aucun fournisseur en attente</p></td></tr>`;
+    }
+
+    // ── Appels d'offres ──
+    async function loadAppels(){
+        const data=await api('GET','/api/v1/appels-offres');
+        const list=Array.isArray(data)?data:[];
+        document.getElementById('appelsTable').innerHTML=list.length?list.map(a=>`
+            <tr><td>${a.id}</td><td><strong>${a.titre}</strong></td><td>${badge(a.categorie||'—')}</td><td>${fmt(a.dateCloture)}</td><td>${badge(a.status)}</td><td>${a.publishedByUserId}</td></tr>`).join(''):`<tr><td colspan="6" class="empty-state"><div class="emoji">📋</div><p>Aucun appel d'offre</p></td></tr>`;
+    }
+
+    // ── Demandes ──
+    async function loadDemandes(){
+        const data=await api('GET','/api/v1/demandes');
+        const list=Array.isArray(data)?data:[];
+        document.getElementById('demandesTable').innerHTML=list.length?list.map(d=>`
+            <tr><td>${d.id}</td><td>${d.fournisseurUserId}</td><td>#${d.appelOffreId}</td><td>${fmtMoney(d.montantPropose)}</td><td>${fmt(d.dateSubmission||d.createdAt)}</td><td>${badge(d.status)}</td></tr>`).join(''):`<tr><td colspan="6" class="empty-state"><div class="emoji">📝</div><p>Aucune candidature</p></td></tr>`;
+    }
+
+    // ── Factures ──
+    async function loadFactures(){
+        const data=await api('GET','/api/v1/factures');
+        const list=Array.isArray(data)?data:[];
+        document.getElementById('facturesTable').innerHTML=list.length?list.map(f=>`
+            <tr><td>${f.id}</td><td>${f.referenceFacture}</td><td>${f.fournisseurUserId}</td><td>${fmtMoney(f.montant)}</td><td>${fmt(f.dateEcheance)}</td><td>${badge(f.status)}</td></tr>`).join(''):`<tr><td colspan="6" class="empty-state"><div class="emoji">🧾</div><p>Aucune facture</p></td></tr>`;
+    }
+
+    // ── Audit ──
+    async function loadAudit(){
+        const data=await api('GET','/api/v1/audit');
+        const list=Array.isArray(data)?data:[];
+        document.getElementById('auditTable').innerHTML=list.length?list.slice(-50).reverse().map(a=>`
+            <tr><td style="white-space:nowrap">${fmt(a.timestamp)}</td><td>${a.actorUserId||'Système'}</td><td><code style="font-size:11px;background:var(--beige);padding:2px 6px;border-radius:4px;">${a.actionType}</code></td><td>${a.targetEntityType||'—'} #${a.targetEntityId||'—'}</td><td><span style="color:${a.outcome==='SUCCESS'?'var(--success)':'var(--danger)'}">${a.outcome||'—'}</span></td></tr>`).join(''):`<tr><td colspan="5" class="empty-state"><div class="emoji">🛡️</div><p>Aucun événement</p></td></tr>`;
+    }
+
+    // ── Create user modal ──
+    function openCreateUserModal(){ document.getElementById('createUserModal').classList.add('open'); }
+    function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+    document.getElementById('createUserModal').addEventListener('click',function(e){if(e.target===this)closeModal('createUserModal');});
+
+    async function createUser(){
+        const username=document.getElementById('cu-username').value.trim();
+        const email=document.getElementById('cu-email').value.trim();
+        const password=document.getElementById('cu-password').value;
+        const role=document.getElementById('cu-role').value;
+        const errEl=document.getElementById('cu-error');
+        if(!username||!email||!password){ errEl.textContent='Tous les champs sont obligatoires.'; errEl.style.display='block'; return; }
+        if(password.length<12){ errEl.textContent='Mot de passe : minimum 12 caractères.'; errEl.style.display='block'; return; }
+        errEl.style.display='none';
+        try{
+            const res=await fetch('/api/v1/users',{ method:'POST', headers:{'Authorization':'Bearer '+token,'Content-Type':'application/json'}, body:JSON.stringify({username,email,password,role}) });
+            if(res.ok){ toast('Utilisateur créé avec succès'); closeModal('createUserModal'); loadUsers(); }
+            else{ const d=await res.json(); errEl.textContent=d.message||'Erreur lors de la création.'; errEl.style.display='block'; }
+        }catch(e){ errEl.textContent='Erreur réseau.'; errEl.style.display='block'; }
+    }
+
+    // ── Logout ──
+    function logout(){ fetch('/api/v1/auth/logout',{method:'POST',headers:{'Authorization':'Bearer '+token}}); sessionStorage.clear(); window.location.href='/index.html'; }
+
+    // ── Export CSV/PDF/Print ──
+    function exportExcel(tbodyId, filename) {
+        const tbody = document.getElementById(tbodyId);
+        if (!tbody) { return; }
+        const table = tbody.closest('table');
+        const allThs = [...table.querySelectorAll('thead th')];
+        const validCols = allThs.map((th,i)=>({i,label:th.textContent.trim()})).filter(c=>c.label!=='Actions');
+        const lines = [validCols.map(c=>'"'+c.label+'"').join(';')];
+        tbody.querySelectorAll('tr').forEach(tr=>{
+            const tds=tr.querySelectorAll('td'); if(!tds.length) return;
+            lines.push(validCols.map(c=>'"'+(tds[c.i]?.innerText?.trim().replace(/"/g,'""')||'')+'"').join(';'));
+        });
+        const csv='\uFEFF'+lines.join('\r\n');
+        const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement('a'); a.href=url; a.download=filename+'_'+new Date().toISOString().slice(0,10)+'.csv';
+        document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+    }
+    function exportPDF(tbodyId, title, heading) {
+        const tbody=document.getElementById(tbodyId); if(!tbody) return;
+        const table=tbody.closest('table');
+        const allThs=[...table.querySelectorAll('thead th')];
+        const validCols=allThs.map((th,i)=>({i,label:th.textContent.trim()})).filter(c=>c.label!=='Actions');
+        let html='<table><thead><tr>'; validCols.forEach(c=>html+=`<th>${c.label}</th>`); html+='</tr></thead><tbody>';
+        tbody.querySelectorAll('tr').forEach(tr=>{
+            const tds=tr.querySelectorAll('td'); if(!tds.length) return;
+            html+='<tr>'+validCols.map(c=>`<td>${tds[c.i]?.innerText?.trim()||''}</td>`).join('')+'</tr>';
+        }); html+='</tbody></table>';
+        const w=window.open('','_blank','width=1000,height=700');
+        w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${title}</title>
+        <style>body{font-family:Arial,sans-serif;font-size:11px;padding:20px;}
+        .hdr{display:flex;justify-content:space-between;border-bottom:3px solid #ea580c;padding-bottom:10px;margin-bottom:16px;}
+        h2{color:#ea580c;margin:0;}.badge{background:linear-gradient(135deg,#f97316,#ea580c);color:white;width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:800;}
+        table{width:100%;border-collapse:collapse;}th{background:#fff7ed;color:#9a3412;padding:8px;border:1px solid #e7d5bf;font-size:10px;text-transform:uppercase;text-align:left;}
+        td{padding:7px 8px;border:1px solid #e7d5bf;}tr:nth-child(even) td{background:#fef9f4;}
+        .np{text-align:center;margin-top:20px;}@media print{.np{display:none!important}}</style></head><body>
+        <div class="hdr"><div><h2>${heading||title}</h2><small>Portail Admin ONEE — ${new Date().toLocaleDateString('fr-FR')}</small></div><div class="badge">ON</div></div>
+        ${html}<div class="np"><button onclick="window.print()" style="padding:9px 24px;background:#ea580c;color:white;border:none;border-radius:7px;font-size:13px;font-weight:700;cursor:pointer;">📄 Enregistrer en PDF</button>
+        <p style="font-size:11px;color:#a8a29e;margin-top:6px;">Imprimante → <b>Enregistrer en PDF</b></p></div></body></html>`);
+        w.document.close(); setTimeout(()=>{w.focus();w.print();},600);
+    }
+    function printTable(tbodyId, title) {
+        const tbody=document.getElementById(tbodyId); if(!tbody) return;
+        const table=tbody.closest('table');
+        const clone=table.cloneNode(true);
+        clone.querySelectorAll('th,td').forEach(c=>{ if(c.textContent.trim()==='Actions'||c.querySelector('button')) c.remove(); });
+        const w=window.open('','_blank','width=900,height=700');
+        w.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${title}</title>
+        <style>body{font-family:Arial;font-size:12px;padding:20px;}h2{color:#ea580c;border-bottom:2px solid #ea580c;padding-bottom:8px;}
+        table{width:100%;border-collapse:collapse;}th{background:#fff7ed;color:#9a3412;padding:8px;border:1px solid #e7d5bf;font-size:11px;text-transform:uppercase;}
+        td{padding:7px 8px;border:1px solid #e7d5bf;}@media print{button{display:none!important}}</style></head><body>
+        <h2>${title}</h2><small>Portail Admin ONEE — ${new Date().toLocaleDateString('fr-FR')}</small><br><br>
+        ${clone.outerHTML}</body></html>`);
+        w.document.close(); setTimeout(()=>w.focus(),300);
+    }
+
+    // ── Init ──
+    loadDashboard();
+</script>
+</body>
+</html>
+
